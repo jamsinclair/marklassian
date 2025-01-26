@@ -1,7 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, Suspense, lazy } from "react";
 import { Copy, Code2, Eye } from "lucide-react";
 import { markdownToAdf } from "marklassian";
-import { ReactRenderer } from "@atlaskit/renderer";
 import AdfValidCheck from "./AdfValidCheck";
 
 const DEFAULT_MARKDOWN = `# Hello World
@@ -23,6 +22,30 @@ const hello = "world";
 console.log(hello);
 \`\`\`
 `;
+
+const DynamicAdfRenderer = lazy(() => import("./AdfRenderer"));
+
+const Skeleton = () => (
+  <div className="space-y-3">
+    <div className="h-4 bg-gray-200 rounded animate-pulse" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-11/12" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-11/12" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5" />
+    <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5" />
+    <style>{`
+        @keyframes customPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .animate-pulse {
+          animation: customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
+  </div>
+);
 
 function Playground() {
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN);
@@ -101,7 +124,9 @@ function Playground() {
               {JSON.stringify(adfOutput, null, 2)}
             </pre>
           ) : (
-            <ReactRenderer document={adfOutput as any} />
+            <Suspense fallback={<Skeleton />}>
+              <DynamicAdfRenderer document={adfOutput} />
+            </Suspense>
           )}
         </div>
       </div>

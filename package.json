@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "format": "biome format",
+    "format": "biome format --write",
     "check": "biome check"
   },
   "workspaces": ["lib", "website"],
