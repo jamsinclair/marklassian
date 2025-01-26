@@ -4,11 +4,7 @@
   "description": "Converts markdown to the Atlassian Document Format (ADF)",
   "main": "index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE.md"
-  ],
+  "files": ["dist", "README.md", "LICENSE.md"],
   "scripts": {
     "build": "tsc && cp ../LICENSE.md ./ && cp ../README.md ./",
     "test": "ava"
