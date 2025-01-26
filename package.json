@@ -1,0 +1,15 @@
+{
+  "name": "marklassian-workspace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "format": "biome format",
+    "check": "biome check"
+  },
+  "workspaces": ["lib", "website"],
+  "private": true,
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  }
+}

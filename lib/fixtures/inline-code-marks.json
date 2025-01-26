@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "type": "doc",
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Inline Code",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://github.com"
+              }
+            },
+            {
+              "type": "code"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Inline Code",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://github.com"
+              }
+            },
+            {
+              "type": "code"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
