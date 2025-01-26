@@ -11,14 +11,14 @@ function Layout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between sm:flex-row flex-col">
           <div className="flex items-center space-x-2">
-            <FileJson2 className="h-6 w-6 text-blue-600" />
+            <FileJson2 className="h-6 w-6 text-blue-600 sm:block hidden" />
             <h1 className="text-xl font-semibold text-gray-900">
               Marklassian | Markdown to ADF Converter
             </h1>
           </div>
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-6 sm:mt-0 mt-4">
             <nav>
               <ul className="flex space-x-6">
                 <li>

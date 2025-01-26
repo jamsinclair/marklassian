@@ -54,7 +54,7 @@ function ApiReference() {
               Converts a Markdown string to an ADF document object (JSON
               Serialisable).
             </p>
-            <div className="bg-gray-100 rounded-lg p-4">
+            <div className="bg-gray-100 rounded-lg p-4 overflow-auto">
               <pre className="text-sm">
                 {`import { markdownToAdf } from 'marklassian';
 
@@ -82,7 +82,7 @@ const adf = markdownToAdf(markdown);`}
 
           <div>
             <h3 className="text-lg font-medium mb-2">Types</h3>
-            <div className="bg-gray-100 rounded-lg p-4">
+            <div className="bg-gray-100 rounded-lg p-4 overflow-auto">
               <pre className="text-sm">
                 {`type AdfNode = {
     type: string;
