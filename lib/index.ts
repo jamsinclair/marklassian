@@ -77,6 +77,9 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
         case "hr":
           return { type: "rule" };
 
+        case "table":
+          return processTable(token as Tokens.Table);
+
         default:
           return null;
       }
@@ -101,6 +104,35 @@ function createMediaNode(token: Tokens.Image): AdfNode {
         },
       },
     ],
+  };
+}
+
+function processTable(token: Tokens.Table): AdfNode {
+  const headers = token.header.map((header) => ({
+    type: "tableHeader",
+    content: processParagraph(header.tokens),
+  }));
+
+  const rows = token.rows.map((row) => ({
+    type: "tableRow",
+    content: row.map((cell) => ({
+      type: "tableCell",
+      content: processParagraph(cell.tokens),
+    })),
+  }));
+
+  const content = [];
+
+  if (headers.length) {
+    content.push({
+      type: "tableRow",
+      content: headers,
+    });
+  }
+
+  return {
+    type: "table",
+    content: content.concat(rows),
   };
 }
 

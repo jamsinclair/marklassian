@@ -1,6 +1,6 @@
 # Marklassian
 
-A lightweight JavaScript library that converts Markdown to the [Atlassian Document Format (ADF)](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/). Built for easy integration with Atlassian products and APIs.
+A lightweight JavaScript library that transforms Markdown to the [Atlassian Document Format (ADF)](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/). Built for easy integration with Atlassian products and APIs.
 
 Visit our [interactive playground](https://marklassian.netlify.app/playground) to experiment with Markdown conversion in real-time.
 
