@@ -2,7 +2,7 @@
 
 A lightweight JavaScript library that transforms Markdown to the [Atlassian Document Format (ADF)](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/). Built for easy integration with Atlassian products and APIs.
 
-Visit our [interactive playground](https://marklassian.netlify.app/playground) to experiment with Markdown conversion in real-time.
+Visit our [interactive playground](https://marklassian.netlify.app/playground) to experiment with Markdown to ADF conversion in real-time.
 
 [![npm version](https://img.shields.io/npm/v/marklassian.svg)](https://www.npmjs.com/package/marklassian)
 [![license](https://img.shields.io/npm/l/marklassian.svg)](https://github.com/jamsinclair/marklassian/blob/main/LICENSE.md)
@@ -39,10 +39,7 @@ const adf = markdownToAdf(markdown);
 - Ordered and unordered lists with nesting
 - Blockquotes
 - Horizontal rules
-
-## Unsupported Markdown Features
-
-- Tables (coming soon)
+- Tables
 
 ## API Reference
 
@@ -72,6 +69,13 @@ type AdfDocument = {
     content: AdfNode[];
 };
 ```
+
+## References
+
+For those interested in the ADF format, the following resources may be helpful:
+- [Atlassian Document Format (ADF) Reference](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure/)
+- [Atlassian Document Format Interactive Builder](https://developer.atlassian.com/cloud/jira/platform/apis/document/playground/)
+- [@atlaskit/adf-utils](https://www.npmjs.com/package/@atlaskit/adf-utils), an official Atlassian library for working with ADF documents. Provides validation and a Java-like builder API for creating ADF documents.
 
 ## License
 
