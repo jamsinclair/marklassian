@@ -5,7 +5,16 @@
   "main": "index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE.md"],
-  "keywords": ["markdown", "adf", "atlassian", "confluence", "jira", "wiki", "markdown-to-adf", "md-to-adf"],
+  "keywords": [
+    "markdown",
+    "adf",
+    "atlassian",
+    "confluence",
+    "jira",
+    "wiki",
+    "markdown-to-adf",
+    "md-to-adf"
+  ],
   "scripts": {
     "build": "tsc && cp ../LICENSE.md ./ && cp ../README.md ./",
     "test": "ava"
