@@ -77,6 +77,7 @@ const adf = markdownToAdf(markdown);`}
               <li>Ordered and unordered lists with nesting</li>
               <li>Blockquotes</li>
               <li>Horizontal rules</li>
+              <li>Tables</li>
             </ul>
           </div>
 
