@@ -13,6 +13,7 @@ Visit our [interactive playground](https://marklassian.netlify.app/playground) t
 - Support for the most common Markdown syntax
 - TypeScript-ready with full type definitions
 - Works in all modern JavaScript environments (Browsers, Node.js, Deno, Bun)
+- Lightweight ([12kb gzipped and minified](https://bundlephobia.com/package/marklassian)), doesn't depend on AtlasKit dependencies
 
 ## Installation
 
@@ -69,6 +70,28 @@ type AdfDocument = {
     content: AdfNode[];
 };
 ```
+
+## Caveats
+
+Marklassian aims to provide a lightweight, fast and mostly accurate conversion from Markdown to ADF.
+
+If you have complex Markdown or require strict conformance to the ADF format, you may need want to use the official Atlassian libraries. These are hefty dependencies that may bloat your project and require manual tree shaking.
+
+The following example demonstrates how to use the official Atlassian libraries for Markdown to ADF conversion:
+
+```javascript
+import { defaultSchema } from '@atlaskit/adf-schema';
+import { JSONTransformer } from '@atlaskit/editor-json-transformer';
+import { MarkdownTransformer } from '@atlaskit/editor-markdown-transformer';
+
+const jsonTransformer = new JSONTransformer();
+const markdownTransformer = new MarkdownTransformer(defaultSchema);
+
+const markdownDocument = '';
+const adfDocument = jsonTransformer.encode(markdownTransformer.parse(markdownDocument));
+```
+
+Sourced from <https://jira.atlassian.com/browse/JRACLOUD-77436>
 
 ## References
 
