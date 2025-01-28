@@ -1,6 +1,6 @@
 {
   "name": "marklassian",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Converts markdown to the Atlassian Document Format (ADF)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
