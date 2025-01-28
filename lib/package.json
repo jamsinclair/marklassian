@@ -2,6 +2,11 @@
   "name": "marklassian",
   "version": "1.0.1",
   "description": "Converts markdown to the Atlassian Document Format (ADF)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamsinclair/marklassian.git",
+    "directory": "lib"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE.md"],
