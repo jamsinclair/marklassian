@@ -9,11 +9,7 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE.md"
-  ],
+  "files": ["dist", "README.md", "LICENSE.md"],
   "keywords": [
     "markdown",
     "adf",
@@ -42,8 +38,6 @@
     "extensions": {
       "ts": "module"
     },
-    "nodeArguments": [
-      "--import=tsimp"
-    ]
+    "nodeArguments": ["--import=tsimp"]
   }
 }

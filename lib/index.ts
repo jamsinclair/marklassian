@@ -59,7 +59,7 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
         case "code":
           return {
             type: "codeBlock",
-            attrs: { language: token.lang || 'text' },
+            attrs: { language: token.lang || "text" },
             content: [
               {
                 type: "text",
