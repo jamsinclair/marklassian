@@ -9,7 +9,7 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md", "LICENSE.md"],
+  "files": ["dist", "README.md", "LICENSE.md", "CHANGELOG.md"],
   "keywords": [
     "markdown",
     "adf",
@@ -21,7 +21,7 @@
     "md-to-adf"
   ],
   "scripts": {
-    "build": "tsc && cp ../LICENSE.md ./ && cp ../README.md ./",
+    "build": "tsc && cp ../LICENSE.md ../README.md ../CHANGELOG.md  ./",
     "test": "ava"
   },
   "license": "MIT",
