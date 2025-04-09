@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "type": "doc",
+  "content": [
+    {
+      "type": "codeBlock",
+      "attrs": {
+        "language": "typescript"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "const hello = \"world\";\nconsole.log(hello);"
+        }
+      ]
+    },
+    {
+      "type": "codeBlock",
+      "attrs": {
+        "language": "bash"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "echo \"Hello World\""
+        }
+      ]
+    },
+    {
+      "type": "codeBlock",
+      "attrs": {
+        "language": "text"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Some text"
+        }
+      ]
+    }
+  ]
+}

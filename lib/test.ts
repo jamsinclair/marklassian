@@ -31,12 +31,7 @@ Below is an image
 1. Ordered item 1
 2. Ordered item 2
 
-> This is a blockquote
-
-\`\`\`typescript
-const hello = "world";
-console.log(hello);
-\`\`\``;
+> This is a blockquote`;
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, basicsAdf);
 });
@@ -65,6 +60,24 @@ test(`For inline code marks only allow link marks and not other inline marks`, a
 
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, inlineCodeAdf);
+});
+
+test(`Converts code blocks correctly`, async (t) => {
+  const markdown = `\`\`\`typescript
+const hello = "world";
+console.log(hello);
+\`\`\`
+
+\`\`\`bash
+echo "Hello World"
+\`\`\`
+
+\`\`\`
+Some text
+\`\`\``;
+
+  const adf = await markdownToAdf(markdown);
+  t.deepEqual(adf, codeBlocksAdf);
 });
 
 test(`Text edge cases are handled correctly`, async (t) => {
