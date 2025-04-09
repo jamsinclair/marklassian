@@ -1,14 +1,17 @@
-import test from "ava";
-import { markdownToAdf } from "./dist/index.js";
-import basicsAdf from "./fixtures/basics.json" assert { type: "json" };
-import nestedListAdf from "./fixtures/nested-list.json" assert { type: "json" };
-import inlineCodeAdf from "./fixtures/inline-code-marks.json" assert {
+import anyTest, { type TestFn } from "ava";
+import { markdownToAdf } from "./index";
+import basicsAdf from "./fixtures/basics.json" with { type: "json" };
+import nestedListAdf from "./fixtures/nested-list.json" with { type: "json" };
+import inlineCodeAdf from "./fixtures/inline-code-marks.json" with {
   type: "json",
 };
-import tableAdf from "./fixtures/table.json" assert { type: "json" };
-import textEdgeCases from "./fixtures/text-edge-cases.json" assert {
+import codeBlocksAdf from "./fixtures/code-blocks.json" with { type: "json" };
+import tableAdf from "./fixtures/table.json" with { type: "json" };
+import textEdgeCases from "./fixtures/text-edge-cases.json" with {
   type: "json",
 };
+
+const test = anyTest as unknown as TestFn<void>;
 
 test("Can convert basic markdown elements", async (t) => {
   const markdown = `# Hello World
@@ -32,12 +35,7 @@ Below is an image
 1. Ordered item 1
 2. Ordered item 2
 
-> This is a blockquote
-
-\`\`\`typescript
-const hello = "world";
-console.log(hello);
-\`\`\``;
+> This is a blockquote`;
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, basicsAdf);
 });
@@ -66,6 +64,24 @@ test(`For inline code marks only allow link marks and not other inline marks`, a
 
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, inlineCodeAdf);
+});
+
+test(`Converts code blocks correctly`, async (t) => {
+  const markdown = `\`\`\`typescript
+const hello = "world";
+console.log(hello);
+\`\`\`
+
+\`\`\`bash
+echo "Hello World"
+\`\`\`
+
+\`\`\`
+Some text
+\`\`\``;
+
+  const adf = await markdownToAdf(markdown);
+  t.deepEqual(adf, codeBlocksAdf);
 });
 
 test(`Text edge cases are handled correctly`, async (t) => {

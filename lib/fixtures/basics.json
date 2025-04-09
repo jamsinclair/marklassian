@@ -252,18 +252,6 @@
           ]
         }
       ]
-    },
-    {
-      "type": "codeBlock",
-      "attrs": {
-        "language": "typescript"
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "const hello = \"world\";\nconsole.log(hello);"
-        }
-      ]
     }
   ]
 }
