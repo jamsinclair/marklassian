@@ -1,14 +1,13 @@
-import test from "ava";
-import { markdownToAdf } from "./dist/index.js";
-import basicsAdf from "./fixtures/basics.json" assert { type: "json" };
-import nestedListAdf from "./fixtures/nested-list.json" assert { type: "json" };
-import inlineCodeAdf from "./fixtures/inline-code-marks.json" assert {
-  type: "json",
-};
-import tableAdf from "./fixtures/table.json" assert { type: "json" };
-import textEdgeCases from "./fixtures/text-edge-cases.json" assert {
-  type: "json",
-};
+import anyTest, {type TestFn} from 'ava';
+import { markdownToAdf } from "./index";
+import basicsAdf from "./fixtures/basics.json" with { type: "json" };;
+import nestedListAdf from "./fixtures/nested-list.json" with { type: "json" };;
+import inlineCodeAdf from "./fixtures/inline-code-marks.json" with { type: "json" };;
+import codeBlocksAdf from "./fixtures/code-blocks.json" with { type: "json" };;
+import tableAdf from "./fixtures/table.json" with { type: "json" };;
+import textEdgeCases from "./fixtures/text-edge-cases.json" with { type: "json" };;
+
+const test = anyTest as unknown as TestFn<void>;
 
 test("Can convert basic markdown elements", async (t) => {
   const markdown = `# Hello World
