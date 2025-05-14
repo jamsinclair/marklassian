@@ -47,6 +47,31 @@ function Layout() {
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <Outlet />
       </main>
+
+      <footer className="bg-white shadow-sm mt-auto py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
+          <p>
+            Created by{" "}
+            <a
+              href="https://github.com/jamsinclair"
+              className="text-blue-600 hover:text-blue-800"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              jamsinclair
+            </a>
+            {' | '}
+            <a
+              href="https://github.com/jamsinclair/marklassian"
+              className="text-blue-600 hover:text-blue-800"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Source Code
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
