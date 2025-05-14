@@ -6,6 +6,7 @@ Visit our [interactive playground](https://marklassian.netlify.app/playground) t
 
 [![npm version](https://img.shields.io/npm/v/marklassian.svg)](https://www.npmjs.com/package/marklassian)
 [![license](https://img.shields.io/npm/l/marklassian.svg)](https://github.com/jamsinclair/marklassian/blob/main/LICENSE.md)
+[![bundlephobia minzipped size](https://badgen.net/bundlephobia/minzip/marklassian)](https://bundlephobia.com/package/marklassian)
 
 ## Features
 
