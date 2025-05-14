@@ -60,7 +60,7 @@ function Layout() {
             >
               jamsinclair
             </a>
-            {' | '}
+            {" | "}
             <a
               href="https://github.com/jamsinclair/marklassian"
               className="text-blue-600 hover:text-blue-800"
