@@ -1,0 +1,529 @@
+{
+  "version": 1,
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 1
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Special Characters Test"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Unicode and Emojis"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Text with emojis: 🚀 🎉 ✨ 💻 📝"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Accented Characters"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Café, naïve, résumé, piñata, Zürich"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Mathematical Symbols"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Equations: α + β = γ, ∑(x²), √16 = 4, π ≈ 3.14159"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Currency and Symbols"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Prices: $100, €50, ¥1000, £75, ₹500 Symbols: ©2024, ®, ™, °C, ±5%"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Special Punctuation"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Quotes: \"Hello\" 'World' „German\" «French» Dashes: em—dash, en–dash, hyphen-dash Ellipsis: Wait... for it…"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Escaped Markdown Characters"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Literal asterisks: "
+        },
+        {
+          "type": "text",
+          "text": "not bold"
+        },
+        {
+          "type": "text",
+          "text": ", "
+        },
+        {
+          "type": "text",
+          "text": "not bold",
+          "marks": [
+            {
+              "type": "em"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "*",
+          "marks": [
+            {
+              "type": "em"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " Literal underscores: "
+        },
+        {
+          "type": "text",
+          "text": "not italic"
+        },
+        {
+          "type": "text",
+          "text": ", "
+        },
+        {
+          "type": "text",
+          "text": "not bold",
+          "marks": [
+            {
+              "type": "em"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": "_",
+          "marks": [
+            {
+              "type": "em"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " Literal backticks: "
+        },
+        {
+          "type": "text",
+          "text": "not code"
+        },
+        {
+          "type": "text",
+          "text": " Literal hash: "
+        },
+        {
+          "type": "text",
+          "text": " not heading"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Mixed Content"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Bold with émojis: 🔥 café",
+          "marks": [
+            {
+              "type": "strong"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "text": " and "
+        },
+        {
+          "type": "text",
+          "text": "italic with symbols: α±β",
+          "marks": [
+            {
+              "type": "em"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Link with special chars",
+          "marks": [
+            {
+              "type": "link",
+              "attrs": {
+                "href": "https://example.com/café?param=value&other=™"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Code with symbols: const π = Math.PI; // ≈ 3.14159",
+          "marks": [
+            {
+              "type": "code"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Code Block with Special Characters"
+        }
+      ]
+    },
+    {
+      "type": "codeBlock",
+      "attrs": {
+        "language": "javascript"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "// Special chars in code\nconst greeting = \"Hello 🌍!\";\nconst price = \"€25.99\";\nconsole.log(`Price: ${price}`);"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "attrs": {
+        "level": 2
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "Table with Special Characters"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableHeader",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Symbol"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Description"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Unicode"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "🚀"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Rocket"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "U+1F680"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "café ☕"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Coffee shop"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Mixed"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "α + β"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Math symbols"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Greek"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "blockquote",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Blockquote with special characters: \"Wisdom is knowing that you don't know.\" — Socrates ⭐"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

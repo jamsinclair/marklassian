@@ -1,11 +1,14 @@
 import anyTest, { type TestFn } from "ava";
 import { markdownToAdf } from "./index";
 import basicsAdf from "./fixtures/basics.json" with { type: "json" };
-import nestedListAdf from "./fixtures/nested-list.json" with { type: "json" };
+import codeBlocksAdf from "./fixtures/code-blocks.json" with { type: "json" };
 import inlineCodeAdf from "./fixtures/inline-code-marks.json" with {
   type: "json",
 };
-import codeBlocksAdf from "./fixtures/code-blocks.json" with { type: "json" };
+import nestedListAdf from "./fixtures/nested-list.json" with { type: "json" };
+import specialCharsAdf from "./fixtures/special-chars.json" with {
+  type: "json",
+};
 import tableAdf from "./fixtures/table.json" with { type: "json" };
 import textEdgeCases from "./fixtures/text-edge-cases.json" with {
   type: "json",
@@ -107,4 +110,59 @@ test(`Can convert tables correctly`, async (t) => {
 
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, tableAdf);
+});
+
+test(`Handles special characters correctly`, async (t) => {
+  const markdown = `# Special Characters Test
+
+## Unicode and Emojis
+Text with emojis: 🚀 🎉 ✨ 💻 📝
+
+## Accented Characters
+Café, naïve, résumé, piñata, Zürich
+
+## Mathematical Symbols
+Equations: α + β = γ, ∑(x²), √16 = 4, π ≈ 3.14159
+
+## Currency and Symbols
+Prices: $100, €50, ¥1000, £75, ₹500
+Symbols: ©2024, ®, ™, °C, ±5%
+
+## Special Punctuation
+Quotes: "Hello" 'World' „German" «French»
+Dashes: em—dash, en–dash, hyphen-dash
+Ellipsis: Wait... for it…
+
+## Escaped Markdown Characters
+Literal asterisks: \\*not bold\\*, \\**not bold\\**
+Literal underscores: \\_not italic\\_, \\__not bold\\__
+Literal backticks: \\\`not code\\\`
+Literal hash: \\# not heading
+
+## Mixed Content
+**Bold with émojis: 🔥 café** and *italic with symbols: α±β*
+
+[Link with special chars](https://example.com/café?param=value&other=™)
+
+\`Code with symbols: const π = Math.PI; // ≈ 3.14159\`
+
+## Code Block with Special Characters
+\`\`\`javascript
+// Special chars in code
+const greeting = "Hello 🌍!";
+const price = "€25.99";
+console.log(\`Price: \${price}\`);
+\`\`\`
+
+## Table with Special Characters
+| Symbol | Description | Unicode |
+|--------|-------------|---------|
+| 🚀 | Rocket | U+1F680 |
+| café ☕ | Coffee shop | Mixed |
+| α + β | Math symbols | Greek |
+
+> Blockquote with special characters: "Wisdom is knowing that you don't know." — Socrates ⭐`;
+
+  const adf = await markdownToAdf(markdown);
+  t.deepEqual(adf, specialCharsAdf);
 });
