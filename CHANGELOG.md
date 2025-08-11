@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4
+
+### Changes
+
+- Update `marked` dependency range to optionally support version 16.0.0
+
 ## 1.0.3
 
 ### Bug Fixes
