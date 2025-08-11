@@ -1,0 +1,34 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm
+        run: npm install -g npm@latest
+      - name: Install
+        run: npm ci
+      - name: Lint
+        run: npm run check
+      - name: Build
+        run: npm run -w lib build
+      - name: Test
+        run: npm run -w lib test
+      - name: Publish
+        run: cd lib && npm publish
