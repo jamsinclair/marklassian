@@ -106,7 +106,8 @@ test(`Can convert tables correctly`, async (t) => {
   const markdown = `| **First Header** | Second Header |
 | ------------- | ------------- |
 | Content Cell  | ![Example Image](https://picsum.photos/400/300) Image with text in cell |
-| ~~Content Cell~~  | Content Cell  |`;
+| ~~Content Cell~~  | Content Cell  |
+| | |`;
 
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, tableAdf);
