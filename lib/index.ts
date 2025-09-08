@@ -26,6 +26,10 @@ type RelaxedToken = Token & {
   checked?: boolean;
 };
 
+/**
+ * Generates a local ID for ADF elements.
+ * @returns a technically valid UUID v4 string, but not RFC compliant
+ */
 function generateLocalId(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0;
