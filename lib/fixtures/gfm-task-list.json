@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "type": "doc",
+  "content": [
+    {
+      "type": "taskList",
+      "attrs": {
+        "localId": "test-task-list-id"
+      },
+      "content": [
+        {
+          "type": "taskItem",
+          "attrs": {
+            "localId": "test-task-item-id-1",
+            "state": "TODO"
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Foo bar"
+            }
+          ]
+        },
+        {
+          "type": "taskItem",
+          "attrs": {
+            "localId": "test-task-item-id-2",
+            "state": "TODO"
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "Baz yo"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

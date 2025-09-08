@@ -20,7 +20,15 @@ type AdfDocument = {
   content: AdfNode[];
 };
 
-type RelaxedToken = Token & { tokens?: RelaxedToken[] };
+type RelaxedToken = Token & { tokens?: RelaxedToken[]; task?: boolean; checked?: boolean };
+
+function generateLocalId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 export function markdownToAdf(markdown: string): AdfDocument {
   const tokens = marked.lexer(markdown);
@@ -48,13 +56,26 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           };
 
         case "list":
-          return {
-            type: token.ordered ? "orderedList" : "bulletList",
-            ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
-            content: token.items.map((item: RelaxedToken) =>
-              processListItem(item),
-            ),
-          };
+          // Check if this is a task list (all items have task: true)
+          const allItemsAreTasks = token.items.every((item: RelaxedToken) => item.task);
+          
+          if (allItemsAreTasks && token.items.some((item: RelaxedToken) => item.task)) {
+            return {
+              type: "taskList",
+              attrs: { localId: generateLocalId() },
+              content: token.items.map((item: RelaxedToken) =>
+                processTaskItem(item),
+              ),
+            };
+          } else {
+            return {
+              type: token.ordered ? "orderedList" : "bulletList",
+              ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
+              content: token.items.map((item: RelaxedToken) =>
+                processListItem(item),
+              ),
+            };
+          }
 
         case "code":
           return {
@@ -215,13 +236,26 @@ function processListItem(item: RelaxedToken): AdfNode {
       }
 
       if (token.type === "list") {
-        itemContent.push({
-          type: token.ordered ? "orderedList" : "bulletList",
-          ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
-          content: token.items.map((nestedItem: RelaxedToken) =>
-            processListItem(nestedItem),
-          ),
-        });
+        // Check if nested list is a task list (all items have task: true)
+        const allItemsAreTasks = token.items.every((nestedItem: RelaxedToken) => nestedItem.task);
+        
+        if (allItemsAreTasks && token.items.some((nestedItem: RelaxedToken) => nestedItem.task)) {
+          itemContent.push({
+            type: "taskList",
+            attrs: { localId: generateLocalId() },
+            content: token.items.map((nestedItem: RelaxedToken) =>
+              processTaskItem(nestedItem),
+            ),
+          });
+        } else {
+          itemContent.push({
+            type: token.ordered ? "orderedList" : "bulletList",
+            ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
+            content: token.items.map((nestedItem: RelaxedToken) =>
+              processListItem(nestedItem),
+            ),
+          });
+        }
       } else {
         const processed = tokensToAdf([token]);
         if (processed.length) {
@@ -240,6 +274,72 @@ function processListItem(item: RelaxedToken): AdfNode {
 
   return {
     type: "listItem",
+    content: itemContent,
+  };
+}
+
+function processTaskItem(item: RelaxedToken): AdfNode {
+  const itemContent: AdfNode[] = [];
+  let currentParagraphTokens: RelaxedToken[] = [];
+
+  (item.tokens || []).forEach((token: RelaxedToken) => {
+    if (
+      token.type === "text" ||
+      token.type === "em" ||
+      token.type === "strong" ||
+      token.type === "del" ||
+      token.type === "link" ||
+      token.type === "codespan"
+    ) {
+      currentParagraphTokens.push(token);
+    } else {
+      if (currentParagraphTokens.length) {
+        // For task items, content is directly inline text nodes, not wrapped in paragraphs
+        itemContent.push(...inlineToAdf(currentParagraphTokens));
+        currentParagraphTokens = [];
+      }
+
+      if (token.type === "list") {
+        // Check if nested list is a task list (all items have task: true)
+        const allItemsAreTasks = token.items.every((nestedItem: RelaxedToken) => nestedItem.task);
+        
+        if (allItemsAreTasks && token.items.some((nestedItem: RelaxedToken) => nestedItem.task)) {
+          itemContent.push({
+            type: "taskList",
+            attrs: { localId: generateLocalId() },
+            content: token.items.map((nestedItem: RelaxedToken) =>
+              processTaskItem(nestedItem),
+            ),
+          });
+        } else {
+          itemContent.push({
+            type: token.ordered ? "orderedList" : "bulletList",
+            ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
+            content: token.items.map((nestedItem: RelaxedToken) =>
+              processListItem(nestedItem),
+            ),
+          });
+        }
+      } else {
+        const processed = tokensToAdf([token]);
+        if (processed.length) {
+          itemContent.push(...processed);
+        }
+      }
+    }
+  });
+
+  if (currentParagraphTokens.length) {
+    // For task items, content is directly inline text nodes, not wrapped in paragraphs
+    itemContent.push(...inlineToAdf(currentParagraphTokens));
+  }
+
+  return {
+    type: "taskItem",
+    attrs: {
+      localId: generateLocalId(),
+      state: item.checked ? "DONE" : "TODO",
+    },
     content: itemContent,
   };
 }
