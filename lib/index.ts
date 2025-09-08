@@ -20,12 +20,16 @@ type AdfDocument = {
   content: AdfNode[];
 };
 
-type RelaxedToken = Token & { tokens?: RelaxedToken[]; task?: boolean; checked?: boolean };
+type RelaxedToken = Token & {
+  tokens?: RelaxedToken[];
+  task?: boolean;
+  checked?: boolean;
+};
 
 function generateLocalId(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -57,9 +61,14 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
 
         case "list":
           // Check if this is a task list (all items have task: true)
-          const allItemsAreTasks = token.items.every((item: RelaxedToken) => item.task);
-          
-          if (allItemsAreTasks && token.items.some((item: RelaxedToken) => item.task)) {
+          const allItemsAreTasks = token.items.every(
+            (item: RelaxedToken) => item.task,
+          );
+
+          if (
+            allItemsAreTasks &&
+            token.items.some((item: RelaxedToken) => item.task)
+          ) {
             return {
               type: "taskList",
               attrs: { localId: generateLocalId() },
@@ -237,9 +246,14 @@ function processListItem(item: RelaxedToken): AdfNode {
 
       if (token.type === "list") {
         // Check if nested list is a task list (all items have task: true)
-        const allItemsAreTasks = token.items.every((nestedItem: RelaxedToken) => nestedItem.task);
-        
-        if (allItemsAreTasks && token.items.some((nestedItem: RelaxedToken) => nestedItem.task)) {
+        const allItemsAreTasks = token.items.every(
+          (nestedItem: RelaxedToken) => nestedItem.task,
+        );
+
+        if (
+          allItemsAreTasks &&
+          token.items.some((nestedItem: RelaxedToken) => nestedItem.task)
+        ) {
           itemContent.push({
             type: "taskList",
             attrs: { localId: generateLocalId() },
@@ -301,9 +315,14 @@ function processTaskItem(item: RelaxedToken): AdfNode {
 
       if (token.type === "list") {
         // Check if nested list is a task list (all items have task: true)
-        const allItemsAreTasks = token.items.every((nestedItem: RelaxedToken) => nestedItem.task);
-        
-        if (allItemsAreTasks && token.items.some((nestedItem: RelaxedToken) => nestedItem.task)) {
+        const allItemsAreTasks = token.items.every(
+          (nestedItem: RelaxedToken) => nestedItem.task,
+        );
+
+        if (
+          allItemsAreTasks &&
+          token.items.some((nestedItem: RelaxedToken) => nestedItem.task)
+        ) {
           itemContent.push({
             type: "taskList",
             attrs: { localId: generateLocalId() },

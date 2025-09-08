@@ -14,7 +14,9 @@ import textEdgeCases from "./fixtures/text-edge-cases.json" with {
   type: "json",
 };
 import taskListAdf from "./fixtures/gfm-task-list.json" with { type: "json" };
-import nestedTaskListAdf from "./fixtures/gfm-nested-task-list.json" with { type: "json" };
+import nestedTaskListAdf from "./fixtures/gfm-nested-task-list.json" with {
+  type: "json",
+};
 
 const test = anyTest as unknown as TestFn<void>;
 
@@ -170,9 +172,9 @@ console.log(\`Price: \${price}\`);
   t.deepEqual(adf, specialCharsAdf);
 });
 
-// 
+//
 // GFM
-// 
+//
 
 // Helper function to normalize UUIDs for testing
 function normalizeAdfForTesting(adf: any): any {
@@ -228,26 +230,38 @@ test(`Can handle task lists with formatting`, async (t) => {
 
   const adf = await markdownToAdf(markdown);
   const normalizedAdf = normalizeAdfForTesting(adf);
-  
+
   // Check that it's a task list
   t.is(normalizedAdf.content[0].type, "taskList");
   t.is(normalizedAdf.content[0].content.length, 3);
-  
+
   // Check first item has bold formatting
   const firstItem = normalizedAdf.content[0].content[0];
   t.is(firstItem.attrs.state, "DONE");
   t.is(firstItem.content[0].marks[0].type, "strong");
-  
+
   // Check second item has italic and link
   const secondItem = normalizedAdf.content[0].content[1];
   t.is(secondItem.attrs.state, "TODO");
-  t.truthy(secondItem.content.some((node: any) => node.marks?.some((mark: any) => mark.type === "em")));
-  t.truthy(secondItem.content.some((node: any) => node.marks?.some((mark: any) => mark.type === "link")));
-  
+  t.truthy(
+    secondItem.content.some((node: any) =>
+      node.marks?.some((mark: any) => mark.type === "em"),
+    ),
+  );
+  t.truthy(
+    secondItem.content.some((node: any) =>
+      node.marks?.some((mark: any) => mark.type === "link"),
+    ),
+  );
+
   // Check third item has code formatting
   const thirdItem = normalizedAdf.content[0].content[2];
   t.is(thirdItem.attrs.state, "TODO");
-  t.truthy(thirdItem.content.some((node: any) => node.marks?.some((mark: any) => mark.type === "code")));
+  t.truthy(
+    thirdItem.content.some((node: any) =>
+      node.marks?.some((mark: any) => mark.type === "code"),
+    ),
+  );
 });
 
 test(`Handles mixed regular and task list items correctly`, async (t) => {
@@ -256,13 +270,13 @@ test(`Handles mixed regular and task list items correctly`, async (t) => {
 - Another regular item`;
 
   const adf = await markdownToAdf(markdown);
-  
+
   // Mixed lists should be treated as regular bullet lists
   const firstContent = adf.content[0];
   t.is(firstContent?.type, "bulletList");
   t.truthy(firstContent?.content);
   t.is(firstContent?.content?.length, 3);
-  
+
   // All items should be regular list items
   firstContent?.content?.forEach((item: any) => {
     t.is(item.type, "listItem");
