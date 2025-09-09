@@ -167,7 +167,3 @@ console.log(\`Price: \${price}\`);
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, specialCharsAdf);
 });
-
-//
-// GFM
-//
