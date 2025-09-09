@@ -28,15 +28,9 @@ type RelaxedToken = Token & {
 
 /**
  * Generates a local ID for ADF elements.
- * @returns a technically valid UUID v4 string, but not RFC compliant
+ * @returns a random UUID v4 string
  */
-function generateLocalId(): string {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
+const generateLocalId = (): string => globalThis.crypto.randomUUID();
 
 export function markdownToAdf(markdown: string): AdfDocument {
   const tokens = marked.lexer(markdown);
@@ -66,7 +60,7 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
         case "list":
           // Check if this is a task list (all items have task: true)
           const allItemsAreTasks = token.items.every(
-            (item: RelaxedToken) => item.task,
+            (item: RelaxedToken) => item.task
           );
 
           if (
@@ -77,7 +71,7 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
               type: "taskList",
               attrs: { localId: generateLocalId() },
               content: token.items.map((item: RelaxedToken) =>
-                processTaskItem(item),
+                processTaskItem(item)
               ),
             };
           } else {
@@ -85,7 +79,7 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
               type: token.ordered ? "orderedList" : "bulletList",
               ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
               content: token.items.map((item: RelaxedToken) =>
-                processListItem(item),
+                processListItem(item)
               ),
             };
           }
@@ -251,7 +245,7 @@ function processListItem(item: RelaxedToken): AdfNode {
       if (token.type === "list") {
         // Check if nested list is a task list (all items have task: true)
         const allItemsAreTasks = token.items.every(
-          (nestedItem: RelaxedToken) => nestedItem.task,
+          (nestedItem: RelaxedToken) => nestedItem.task
         );
 
         if (
@@ -262,7 +256,7 @@ function processListItem(item: RelaxedToken): AdfNode {
             type: "taskList",
             attrs: { localId: generateLocalId() },
             content: token.items.map((nestedItem: RelaxedToken) =>
-              processTaskItem(nestedItem),
+              processTaskItem(nestedItem)
             ),
           });
         } else {
@@ -270,7 +264,7 @@ function processListItem(item: RelaxedToken): AdfNode {
             type: token.ordered ? "orderedList" : "bulletList",
             ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
             content: token.items.map((nestedItem: RelaxedToken) =>
-              processListItem(nestedItem),
+              processListItem(nestedItem)
             ),
           });
         }
@@ -320,7 +314,7 @@ function processTaskItem(item: RelaxedToken): AdfNode {
       if (token.type === "list") {
         // Check if nested list is a task list (all items have task: true)
         const allItemsAreTasks = token.items.every(
-          (nestedItem: RelaxedToken) => nestedItem.task,
+          (nestedItem: RelaxedToken) => nestedItem.task
         );
 
         if (
@@ -331,7 +325,7 @@ function processTaskItem(item: RelaxedToken): AdfNode {
             type: "taskList",
             attrs: { localId: generateLocalId() },
             content: token.items.map((nestedItem: RelaxedToken) =>
-              processTaskItem(nestedItem),
+              processTaskItem(nestedItem)
             ),
           });
         } else {
@@ -339,7 +333,7 @@ function processTaskItem(item: RelaxedToken): AdfNode {
             type: token.ordered ? "orderedList" : "bulletList",
             ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
             content: token.items.map((nestedItem: RelaxedToken) =>
-              processListItem(nestedItem),
+              processListItem(nestedItem)
             ),
           });
         }
@@ -388,7 +382,7 @@ function getSafeText(token: RelaxedToken): string {
 
 function getMarks(
   token: RelaxedToken,
-  marks: Record<string, AdfMark> = {},
+  marks: Record<string, AdfMark> = {}
 ): AdfMark[] {
   if (token.type === "em" && !marks.em) {
     marks.em = { type: "em" };
@@ -426,7 +420,7 @@ function getMarks(
   if (marks.code) {
     // Code Inline mark only supports a link or annotation mark
     return resolvedMarks.filter(
-      (mark) => mark.type === "link" || mark.type === "code",
+      (mark) => mark.type === "link" || mark.type === "code"
     );
   }
 
