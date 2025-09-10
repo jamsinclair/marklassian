@@ -1,5 +1,5 @@
 import anyTest, { type TestFn } from "ava";
-import { markdownToAdf } from "./index";
+import { markdownToAdf } from "../index";
 import basicsAdf from "./fixtures/basics.json" with { type: "json" };
 import codeBlocksAdf from "./fixtures/code-blocks.json" with { type: "json" };
 import inlineCodeAdf from "./fixtures/inline-code-marks.json" with {

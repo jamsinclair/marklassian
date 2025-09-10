@@ -38,6 +38,7 @@
     "extensions": {
       "ts": "module"
     },
-    "nodeArguments": ["--import=tsimp"]
+    "nodeArguments": ["--import=tsimp"],
+    "files": ["test/**/*.test.ts"]
   }
 }

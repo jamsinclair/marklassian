@@ -21,4 +21,4 @@ jobs:
       - name: Build
         run: npm run -w lib build
       - name: Test
-        run: npm run -w lib test
+        run: npm run -w lib test -- --concurrency=1
