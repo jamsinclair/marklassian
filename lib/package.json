@@ -1,6 +1,6 @@
 {
   "name": "marklassian",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Converts markdown to the Atlassian Document Format (ADF)",
   "repository": {
     "type": "git",

@@ -1,7 +1,6 @@
 {
   "name": "marklassian-workspace",
-  "version": "1.0.0",
-  "description": "",
+  "description": "This repository uses NPM workspaces. The module's package file is in the /lib directory.",
   "main": "index.js",
   "scripts": {
     "format": "biome format --write",

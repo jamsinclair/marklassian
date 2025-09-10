@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+### New Features
+
+- Added ADF support for task lists (GitHub Flavoured Markdown feature)
+
 ## 1.0.4
 
 ### Changes

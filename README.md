@@ -16,10 +16,6 @@ Visit our [interactive playground](https://marklassian.netlify.app/playground) t
 - Works in all modern JavaScript environments (Browsers, Node.js, Deno, Bun)
 - Lightweight ([12kb gzipped and minified](https://bundlephobia.com/package/marklassian)), doesn't depend on AtlasKit dependencies
 
-### GFM
-
-- Task lists
-
 ## Installation
 
 ```bash
@@ -46,6 +42,7 @@ const adf = markdownToAdf(markdown);
 - Blockquotes
 - Horizontal rules
 - Tables
+- Task lists (GitHub Flavoured Markdown feature)
 
 ## API Reference
 
