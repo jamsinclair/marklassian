@@ -5,6 +5,7 @@
 ### New Features
 
 - Added ADF support for task lists (GitHub Flavoured Markdown feature)
+    - Thank you @sharmrt-v for the contribution [#4](https://github.com/jamsinclair/marklassian/pull/4)
 
 ## 1.0.4
 
