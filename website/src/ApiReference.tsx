@@ -78,6 +78,7 @@ const adf = markdownToAdf(markdown);`}
               <li>Blockquotes</li>
               <li>Horizontal rules</li>
               <li>Tables</li>
+              <li>Task lists (GitHub Flavoured Markdown)</li>
             </ul>
           </div>
 
