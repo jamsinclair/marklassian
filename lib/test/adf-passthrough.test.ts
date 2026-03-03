@@ -1,8 +1,11 @@
-import test from "ava";
+import anyTest, { type TestFn } from "ava";
 import { markdownToAdf } from "../index";
 import adfPassthroughAdf from "./fixtures/adf-passthrough.json" with {
   type: "json",
 };
+
+// Cast avoids TypeScript errors under this project's tsconfig — see core-markdown.test.ts for pattern
+const test = anyTest as unknown as TestFn<void>;
 
 // --- happy path: single object ---
 
@@ -66,10 +69,10 @@ test("interleaves array-form ADF nodes with surrounding markdown", (t) => {
   const markdown = `A paragraph.\n\n<adf>\n${JSON.stringify(nodes)}\n</adf>\n\nAnother paragraph.`;
   const result = markdownToAdf(markdown);
   t.is(result.content.length, 4);
-  t.is(result.content[0].type, "paragraph");
-  t.is(result.content[1].type, "rule");
-  t.is(result.content[2].type, "rule");
-  t.is(result.content[3].type, "paragraph");
+  t.is(result.content[0]!.type, "paragraph");
+  t.is(result.content[1]!.type, "rule");
+  t.is(result.content[2]!.type, "rule");
+  t.is(result.content[3]!.type, "paragraph");
 });
 
 // --- error cases ---
@@ -112,4 +115,20 @@ test("ignores unrelated HTML tags (existing behaviour unchanged)", (t) => {
       },
     ],
   });
+});
+
+test("throws when <adf> tag is empty", (t) => {
+  t.throws(() => markdownToAdf("<adf>\n</adf>"), {
+    message: /\<adf\> tag content is empty/,
+  });
+});
+
+test("does not parse inline <adf> tags (block-level only)", (t) => {
+  // When <adf> appears inline, marked treats it as inline HTML and the JSON
+  // leaks into the paragraph text — this documents the known limitation.
+  const result = markdownToAdf(
+    'Some text <adf>{"type":"rule"}</adf> more text.',
+  );
+  t.is(result.content.length, 1);
+  t.is(result.content[0]!.type, "paragraph");
 });

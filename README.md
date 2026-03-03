@@ -67,6 +67,8 @@ This matches the structure of a node in an ADF document's `content` array. All `
 
 If the tag content is not valid JSON, or any parsed value is not an object with a `"type"` string, `markdownToAdf` will throw an error.
 
+Note that `<adf>` must appear as a block-level element — surrounded by blank lines. Inline placement (e.g. inside a sentence) will result in the tag being treated as inline HTML and the content will not be parsed as ADF.
+
 ## API Reference
 
 ### `markdownToAdf(markdown: string): AdfDocument`

@@ -42,6 +42,13 @@ function parseAdfTag(raw: string): AdfNode | AdfNode[] | null {
   if (!match) return null;
 
   const json = match[1]!.trim();
+
+  if (json.length === 0) {
+    throw new Error(
+      "<adf> tag content is empty — expected a JSON object or array",
+    );
+  }
+
   let parsed: unknown;
   try {
     parsed = JSON.parse(json);
