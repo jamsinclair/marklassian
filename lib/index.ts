@@ -41,7 +41,7 @@ function parseAdfTag(raw: string): AdfNode | AdfNode[] | null {
   const match = raw.trim().match(/^<adf>([\s\S]*?)<\/adf>$/i);
   if (!match) return null;
 
-  const json = match[1].trim();
+  const json = match[1]!.trim();
   let parsed: unknown;
   try {
     parsed = JSON.parse(json);
@@ -154,10 +154,11 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
         case "table":
           return processTable(token as Tokens.Table);
 
-        case "html":
+        case "html": {
           const adfNode = parseAdfTag(token.raw);
           if (adfNode) return adfNode;
           return null;
+        }
 
         default:
           return null;
