@@ -44,6 +44,29 @@ const adf = markdownToAdf(markdown);
 - Tables
 - Task lists (GitHub Flavoured Markdown feature)
 
+## Embedding ADF nodes
+
+For cases where Markdown doesn't cover a required Confluence or Jira structure (macros, panels, status badges, etc.), you can embed raw ADF nodes directly inside `<adf>` tags:
+
+~~~markdown
+# My page
+
+<adf>
+{"type":"extension","attrs":{"extensionType":"com.atlassian.confluence.macro.core","extensionKey":"status","parameters":{"macroParams":{"title":{"value":"Done"},"colour":{"value":"Green"}}}}}
+</adf>
+
+More content here.
+~~~
+
+The content inside `<adf>…</adf>` must be either:
+
+- A single JSON object with at least a `"type"` string property, or
+- A JSON array of such objects
+
+This matches the structure of a node in an ADF document's `content` array. All `attrs`, `content`, and `marks` fields are passed through unchanged.
+
+If the tag content is not valid JSON, or any parsed value is not an object with a `"type"` string, `markdownToAdf` will throw an error.
+
 ## API Reference
 
 ### `markdownToAdf(markdown: string): AdfDocument`
