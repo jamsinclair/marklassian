@@ -1,7 +1,7 @@
 ---
 status: accepted
 date: 2026-03-03
-author: Phoenix
+author: @merphx
 ---
 
 # 001. ADF passthrough syntax
