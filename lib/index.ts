@@ -32,6 +32,59 @@ type RelaxedToken = Token & {
  */
 const generateLocalId = (): string => globalThis.crypto.randomUUID();
 
+/**
+ * Parses an <adf>...</adf> HTML token value and returns the embedded ADF node(s).
+ * Returns null if the raw string is not an <adf> tag.
+ * Throws a descriptive error if the tag content is not valid ADF JSON.
+ */
+function parseAdfTag(raw: string): AdfNode | AdfNode[] | null {
+  const match = raw.trim().match(/^<adf>([\s\S]*?)<\/adf>$/i);
+  if (!match) return null;
+
+  const json = match[1]!.trim();
+
+  if (json.length === 0) {
+    throw new Error(
+      "<adf> tag content is empty — expected a JSON object or array",
+    );
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    throw new Error(`Invalid JSON in <adf> tag: ${json}`);
+  }
+
+  if (Array.isArray(parsed)) {
+    return parsed.map((item, i) => {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        throw new Error(
+          `ADF node must be a JSON object or array of objects (item ${i} is not an object)`,
+        );
+      }
+      const node = item as Record<string, unknown>;
+      if (typeof node.type !== "string" || node.type.length === 0) {
+        throw new Error(`ADF node must have a "type" string property`);
+      }
+      return node as AdfNode;
+    });
+  }
+
+  if (typeof parsed !== "object" || parsed === null) {
+    throw new Error(
+      `ADF node must be a JSON object or array, got: ${JSON.stringify(parsed)}`,
+    );
+  }
+
+  const node = parsed as Record<string, unknown>;
+  if (typeof node.type !== "string" || node.type.length === 0) {
+    throw new Error(`ADF node must have a "type" string property`);
+  }
+
+  return node as AdfNode;
+}
+
 export function markdownToAdf(markdown: string): AdfDocument {
   const tokens = marked.lexer(markdown);
   return {
@@ -107,6 +160,12 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
 
         case "table":
           return processTable(token as Tokens.Table);
+
+        case "html": {
+          const adfNode = parseAdfTag(token.raw);
+          if (adfNode) return adfNode;
+          return null;
+        }
 
         default:
           return null;
