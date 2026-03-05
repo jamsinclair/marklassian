@@ -48,7 +48,7 @@ const adf = markdownToAdf(markdown);
 
 For cases where Markdown doesn't cover a required Confluence or Jira structure (macros, panels, status badges, etc.), you can embed raw ADF nodes directly inside `<adf>` tags:
 
-~~~markdown
+```markdown
 # My page
 
 <adf>
@@ -56,7 +56,7 @@ For cases where Markdown doesn't cover a required Confluence or Jira structure (
 </adf>
 
 More content here.
-~~~
+```
 
 The content inside `<adf>…</adf>` must be either:
 
@@ -67,7 +67,9 @@ This matches the structure of a node in an ADF document's `content` array. All `
 
 If the tag content is not valid JSON, or any parsed value is not an object with a `"type"` string, `markdownToAdf` will throw an error.
 
-Note that `<adf>` must appear as a block-level element — surrounded by blank lines. Inline placement (e.g. inside a sentence) will result in the tag being treated as inline HTML and the content will not be parsed as ADF.
+⚠️ Please note
+- `<adf>` must appear as a block-level element — surrounded by blank lines. Inline placement (e.g. inside a sentence) will result in the tag being treated as inline HTML and the content will not be parsed as ADF.
+- The embedded ADF nodes are not processed or validated by this library. They are passed through verbatim into the output document. This means that you are responsible for ensuring that the embedded ADF is valid and correctly structured for your use case.
 
 ## API Reference
 
