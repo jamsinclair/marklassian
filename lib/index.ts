@@ -543,6 +543,14 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
             },
           ];
 
+        case "escape":
+          return [
+            {
+              type: "text",
+              text: token.text,
+            },
+          ];
+
         case "br":
           return [{ type: "hardBreak" }];
 
