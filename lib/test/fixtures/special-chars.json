@@ -140,11 +140,23 @@
         },
         {
           "type": "text",
+          "text": "*"
+        },
+        {
+          "type": "text",
           "text": "not bold"
         },
         {
           "type": "text",
+          "text": "*"
+        },
+        {
+          "type": "text",
           "text": ", "
+        },
+        {
+          "type": "text",
+          "text": "*"
         },
         {
           "type": "text",
@@ -170,11 +182,23 @@
         },
         {
           "type": "text",
+          "text": "_"
+        },
+        {
+          "type": "text",
           "text": "not italic"
         },
         {
           "type": "text",
+          "text": "_"
+        },
+        {
+          "type": "text",
           "text": ", "
+        },
+        {
+          "type": "text",
+          "text": "_"
         },
         {
           "type": "text",
@@ -200,11 +224,23 @@
         },
         {
           "type": "text",
+          "text": "`"
+        },
+        {
+          "type": "text",
           "text": "not code"
         },
         {
           "type": "text",
+          "text": "`"
+        },
+        {
+          "type": "text",
           "text": " Literal hash: "
+        },
+        {
+          "type": "text",
+          "text": "#"
         },
         {
           "type": "text",
