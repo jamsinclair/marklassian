@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+### Bug Fixes
+
+- Handle escape tokens in inlineToAdf ([#8](https://github.com/jamsinclair/marklassian/pull/8))
+
 ## 1.2.0
 
 ### New Features
