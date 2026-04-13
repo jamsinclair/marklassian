@@ -78,6 +78,7 @@ If the tag content is not valid JSON, or any parsed value is not an object with 
   | <adf>{"type":"emoji","attrs":{"shortName":":white_check_mark:","text":"✅"}}</adf> Done | All good |
   ```
 - The embedded ADF nodes are not processed or validated by this library. They are passed through verbatim into the output document. This means that you are responsible for ensuring that the embedded ADF is valid and correctly structured for your use case.
+- Importing `marklassian` registers a custom extension on the shared `marked` singleton. If your application also uses `marked` directly (e.g. for HTML rendering via `marked.parse()`), be aware that `<adf>…</adf>` content will be silently swallowed in any HTML output from that shared instance.
 
 ## API Reference
 

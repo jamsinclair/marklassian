@@ -38,6 +38,12 @@ type AdfInlineToken = {
  * single `adf_inline` token carrying the raw JSON string. Without this
  * extension, marked's inline lexer splits the tag into four separate tokens
  * (html, text, html, text), making it impossible to parse.
+ *
+ * Note: `marked.use()` mutates the global `marked` singleton. Any application
+ * that imports marklassian will find its shared `marked` instance modified —
+ * including HTML rendering via `marked.parse()`. The practical effect is that
+ * `<adf>…</adf>` content is silently swallowed (renderer returns "") in any
+ * HTML output produced by that shared instance.
  */
 marked.use({
   extensions: [
@@ -45,7 +51,9 @@ marked.use({
       name: "adf_inline",
       level: "inline" as const,
       start(src: string) {
-        return src.indexOf("<adf>");
+        // Use a case-insensitive search to match the tokenizer regex (/i),
+        // so <ADF> tags are treated consistently by both functions.
+        return src.search(/<adf>/i);
       },
       tokenizer(src: string): AdfInlineToken | undefined {
         const match = src.match(/^<adf>([\s\S]*?)<\/adf>/i);

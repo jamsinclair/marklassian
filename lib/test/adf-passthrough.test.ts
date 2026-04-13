@@ -102,6 +102,16 @@ test("throws when <adf> array contains an item missing a type", (t) => {
   );
 });
 
+// --- case-insensitivity ---
+
+test("passes through a block ADF node with uppercase <ADF> tags", (t) => {
+  t.deepEqual(markdownToAdf('<ADF>\n{"type":"rule"}\n</ADF>'), {
+    version: 1,
+    type: "doc",
+    content: [{ type: "rule" }],
+  });
+});
+
 // --- non-regression ---
 
 test("ignores unrelated HTML tags (existing behaviour unchanged)", (t) => {
@@ -124,6 +134,24 @@ test("throws when <adf> tag is empty", (t) => {
 });
 
 // --- inline happy path ---
+
+test("passes through an inline ADF node with uppercase <ADF> tags", (t) => {
+  const result = markdownToAdf('text <ADF>{"type":"rule"}</ADF> more.');
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "text " },
+          { type: "rule" },
+          { type: "text", text: " more." },
+        ],
+      },
+    ],
+  });
+});
 
 test("passes through an inline ADF node (object) embedded in a paragraph", (t) => {
   const mention = {
