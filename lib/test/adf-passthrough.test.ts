@@ -254,10 +254,9 @@ test("throws on malformed JSON inside inline <adf> tags", (t) => {
 });
 
 test("throws when inline <adf> content is a valid object but missing type", (t) => {
-  t.throws(
-    () => markdownToAdf('text <adf>{"attrs":{"level":1}}</adf> more.'),
-    { message: /ADF node must have a "type" string/ },
-  );
+  t.throws(() => markdownToAdf('text <adf>{"attrs":{"level":1}}</adf> more.'), {
+    message: /ADF node must have a "type" string/,
+  });
 });
 
 test("throws when inline <adf> tag is empty", (t) => {
@@ -286,5 +285,5 @@ test("importing marklassian does not affect marked.parse() HTML output", (t) => 
   // not the global singleton — so consumers using marked directly are unaffected.
   // A clean singleton renders <adf> as literal HTML; a mutated one swallows it (returns "<p></p>\n").
   const html = marked.parse('<adf>{"type":"rule"}</adf>') as string;
-  t.is(html, '<p><adf>{&quot;type&quot;:&quot;rule&quot;}</adf></p>\n');
+  t.is(html, "<p><adf>{&quot;type&quot;:&quot;rule&quot;}</adf></p>\n");
 });
