@@ -26,6 +26,46 @@ type RelaxedToken = Token & {
   checked?: boolean;
 };
 
+type AdfInlineToken = {
+  type: "adf_inline";
+  raw: string;
+  adfJson: string;
+};
+
+/**
+ * Inline marked extension that intercepts <adf>…</adf> tags appearing within
+ * inline content (paragraphs, table cells, headings, etc.) and produces a
+ * single `adf_inline` token carrying the raw JSON string. Without this
+ * extension, marked's inline lexer splits the tag into four separate tokens
+ * (html, text, html, text), making it impossible to parse.
+ */
+marked.use({
+  extensions: [
+    {
+      name: "adf_inline",
+      level: "inline" as const,
+      start(src: string) {
+        return src.indexOf("<adf>");
+      },
+      tokenizer(src: string): AdfInlineToken | undefined {
+        const match = src.match(/^<adf>([\s\S]*?)<\/adf>/i);
+        if (match) {
+          return {
+            type: "adf_inline",
+            raw: match[0],
+            adfJson: match[1]!.trim(),
+          };
+        }
+      },
+      // renderer is required by the marked extension interface but is not
+      // relevant here — marklassian never renders to HTML.
+      renderer() {
+        return "";
+      },
+    },
+  ],
+});
+
 /**
  * Generates a local ID for ADF elements.
  * @returns a random UUID v4 string
@@ -553,6 +593,14 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
 
         case "br":
           return [{ type: "hardBreak" }];
+
+        case "adf_inline": {
+          const node = parseAdfTag(
+            `<adf>${(token as AdfInlineToken).adfJson}</adf>`,
+          );
+          if (!node) return [];
+          return Array.isArray(node) ? node : [node];
+        }
 
         default:
           return [];
