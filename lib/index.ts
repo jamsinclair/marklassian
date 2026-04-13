@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { Marked } from "marked";
 import type { Token, Tokens } from "marked";
 
 type AdfNode = {
@@ -33,19 +33,18 @@ type AdfInlineToken = {
 };
 
 /**
- * Inline marked extension that intercepts <adf>…</adf> tags appearing within
- * inline content (paragraphs, table cells, headings, etc.) and produces a
- * single `adf_inline` token carrying the raw JSON string. Without this
- * extension, marked's inline lexer splits the tag into four separate tokens
- * (html, text, html, text), making it impossible to parse.
+ * A local Marked instance with the adf_inline extension registered. Using a
+ * local instance (rather than calling `marked.use()` on the global singleton)
+ * ensures that importing marklassian does not affect any other use of marked
+ * in the consumer's application.
  *
- * Note: `marked.use()` mutates the global `marked` singleton. Any application
- * that imports marklassian will find its shared `marked` instance modified —
- * including HTML rendering via `marked.parse()`. The practical effect is that
- * `<adf>…</adf>` content is silently swallowed (renderer returns "") in any
- * HTML output produced by that shared instance.
+ * The extension intercepts <adf>…</adf> tags appearing within inline content
+ * (paragraphs, table cells, headings, etc.) and produces a single `adf_inline`
+ * token carrying the raw JSON string. Without this extension, marked's inline
+ * lexer splits the tag into four separate tokens (html, text, html, text),
+ * making it impossible to parse.
  */
-marked.use({
+const marked = new Marked({
   extensions: [
     {
       name: "adf_inline",

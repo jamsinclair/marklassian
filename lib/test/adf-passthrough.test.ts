@@ -1,4 +1,5 @@
 import anyTest, { type TestFn } from "ava";
+import { marked } from "marked";
 import { markdownToAdf } from "../index";
 import adfPassthroughAdf from "./fixtures/adf-passthrough.json" with {
   type: "json",
@@ -276,4 +277,16 @@ test("throws when inline <adf> content is valid JSON but not an object or array"
   t.throws(() => markdownToAdf("text <adf>42</adf> more."), {
     message: /ADF node must be a JSON object or array/,
   });
+});
+
+// --- marked singleton isolation ---
+
+test("importing marklassian does not affect marked.parse() HTML output", (t) => {
+  // The adf_inline extension must be registered on a local Marked instance,
+  // not the global singleton — so consumers using marked directly are unaffected.
+  const html = marked.parse('<adf>{"type":"rule"}</adf>') as string;
+  // If the singleton is mutated, the renderer returns "" and content is swallowed.
+  // A clean singleton produces an <hr> element for {"type":"rule"} literal text.
+  t.false(html.includes('<p></p>'), "adf content was silently swallowed by the global marked instance");
+  t.true(html.length > 0, "marked.parse() returned empty output");
 });
