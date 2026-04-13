@@ -68,7 +68,7 @@ This matches the structure of a node in an ADF document's `content` array. All `
 If the tag content is not valid JSON, or any parsed value is not an object with a `"type"` string, `markdownToAdf` will throw an error.
 
 ⚠️ Please note
-- `<adf>` can appear either as a block-level element (surrounded by blank lines) or inline within a paragraph or table cell. Inline placement embeds the ADF node(s) into the surrounding paragraph content:
+- `<adf>` can appear either as a block-level element (surrounded by blank lines) or inline within a paragraph, list item, table cell, etc. Inline placement embeds the ADF node(s) into the surrounding paragraph content:
 
   ```markdown
   See the <adf>{"type":"inlineCard","attrs":{"url":"https://example.com"}}</adf> card above.
