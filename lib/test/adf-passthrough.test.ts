@@ -284,9 +284,7 @@ test("throws when inline <adf> content is valid JSON but not an object or array"
 test("importing marklassian does not affect marked.parse() HTML output", (t) => {
   // The adf_inline extension must be registered on a local Marked instance,
   // not the global singleton — so consumers using marked directly are unaffected.
+  // A clean singleton renders <adf> as literal HTML; a mutated one swallows it (returns "<p></p>\n").
   const html = marked.parse('<adf>{"type":"rule"}</adf>') as string;
-  // If the singleton is mutated, the renderer returns "" and content is swallowed.
-  // A clean singleton produces an <hr> element for {"type":"rule"} literal text.
-  t.false(html.includes('<p></p>'), "adf content was silently swallowed by the global marked instance");
-  t.true(html.length > 0, "marked.parse() returned empty output");
+  t.is(html, '<p><adf>{&quot;type&quot;:&quot;rule&quot;}</adf></p>\n');
 });
