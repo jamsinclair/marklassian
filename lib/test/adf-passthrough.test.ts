@@ -246,3 +246,16 @@ test("throws when inline <adf> tag is empty", (t) => {
     message: /<adf> tag content is empty/,
   });
 });
+
+test("throws when inline <adf> array contains an item missing a type", (t) => {
+  t.throws(
+    () => markdownToAdf('text <adf>[{"type":"rule"},{"attrs":{}}]</adf> more.'),
+    { message: /ADF node must have a "type" string/ },
+  );
+});
+
+test("throws when inline <adf> content is valid JSON but not an object or array", (t) => {
+  t.throws(() => markdownToAdf("text <adf>42</adf> more."), {
+    message: /ADF node must be a JSON object or array/,
+  });
+});
