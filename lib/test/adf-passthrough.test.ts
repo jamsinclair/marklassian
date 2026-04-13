@@ -132,3 +132,117 @@ test("does not parse inline <adf> tags (block-level only)", (t) => {
   t.is(result.content.length, 1);
   t.is(result.content[0]!.type, "paragraph");
 });
+
+// --- inline happy path ---
+
+test("passes through an inline ADF node (object) embedded in a paragraph", (t) => {
+  const mention = {
+    type: "mention",
+    attrs: { id: "abc-123", text: "@Alice", accessLevel: "" },
+  };
+  const result = markdownToAdf(
+    `Hello <adf>${JSON.stringify(mention)}</adf> how are you?`,
+  );
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "Hello " },
+          mention,
+          { type: "text", text: " how are you?" },
+        ],
+      },
+    ],
+  });
+});
+
+test("passes through multiple inline ADF nodes (array) embedded in a paragraph", (t) => {
+  const emoji = { type: "emoji", attrs: { shortName: ":tada:", text: "🎉" } };
+  const date = { type: "date", attrs: { timestamp: "1704067200000" } };
+  const result = markdownToAdf(
+    `Party <adf>${JSON.stringify([emoji, date])}</adf> launched.`,
+  );
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "Party " },
+          emoji,
+          date,
+          { type: "text", text: " launched." },
+        ],
+      },
+    ],
+  });
+});
+
+test("passes through multiple inline <adf> tags within the same paragraph", (t) => {
+  const mention = {
+    type: "mention",
+    attrs: { id: "abc-123", text: "@Alice", accessLevel: "" },
+  };
+  const emoji = { type: "emoji", attrs: { shortName: ":wave:", text: "👋" } };
+  const result = markdownToAdf(
+    `Hi <adf>${JSON.stringify(mention)}</adf> and <adf>${JSON.stringify(emoji)}</adf> there.`,
+  );
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "Hi " },
+          mention,
+          { type: "text", text: " and " },
+          emoji,
+          { type: "text", text: " there." },
+        ],
+      },
+    ],
+  });
+});
+
+test("passes through an inline ADF node inside a table cell", (t) => {
+  const status = {
+    type: "status",
+    attrs: { text: "Done", color: "green", localId: "s1", style: "" },
+  };
+  const md = `| Status | Notes |\n| --- | --- |\n| <adf>${JSON.stringify(status)}</adf> | All good |`;
+  const result = markdownToAdf(md);
+  t.is(result.content.length, 1);
+  t.is(result.content[0]!.type, "table");
+  const tableRow = (result.content[0] as any).content[1]; // first data row (index 0 = header row)
+  const firstCell = tableRow.content[0];
+  t.is(firstCell.type, "tableCell");
+  const cellParagraph = firstCell.content[0];
+  t.is(cellParagraph.type, "paragraph");
+  t.deepEqual(cellParagraph.content, [status]);
+});
+
+// --- inline error cases ---
+
+test("throws on malformed JSON inside inline <adf> tags", (t) => {
+  t.throws(() => markdownToAdf("text <adf>not valid json</adf> more."), {
+    message: /Invalid JSON in <adf> tag/,
+  });
+});
+
+test("throws when inline <adf> content is a valid object but missing type", (t) => {
+  t.throws(
+    () => markdownToAdf('text <adf>{"attrs":{"level":1}}</adf> more.'),
+    { message: /ADF node must have a "type" string/ },
+  );
+});
+
+test("throws when inline <adf> tag is empty", (t) => {
+  t.throws(() => markdownToAdf("text <adf></adf> more."), {
+    message: /<adf> tag content is empty/,
+  });
+});
