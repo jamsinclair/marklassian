@@ -123,16 +123,6 @@ test("throws when <adf> tag is empty", (t) => {
   });
 });
 
-test("does not parse inline <adf> tags (block-level only)", (t) => {
-  // When <adf> appears inline, marked treats it as inline HTML and the JSON
-  // leaks into the paragraph text — this documents the known limitation.
-  const result = markdownToAdf(
-    'Some text <adf>{"type":"rule"}</adf> more text.',
-  );
-  t.is(result.content.length, 1);
-  t.is(result.content[0]!.type, "paragraph");
-});
-
 // --- inline happy path ---
 
 test("passes through an inline ADF node (object) embedded in a paragraph", (t) => {
