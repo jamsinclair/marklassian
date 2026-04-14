@@ -278,6 +278,88 @@ test("throws when inline <adf> content is valid JSON but not an object or array"
   });
 });
 
+// --- inline ADF inside emphasis/strong/del ---
+
+test("passes through an inline ADF node inside bold text", (t) => {
+  const mention = {
+    type: "mention",
+    attrs: { id: "abc-123", text: "@Alice", accessLevel: "APPLICATION" },
+  };
+  const result = markdownToAdf(
+    `**Contact <adf>${JSON.stringify(mention)}</adf> for help.**`,
+  );
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "Contact ", marks: [{ type: "strong" }] },
+          mention,
+          { type: "text", text: " for help.", marks: [{ type: "strong" }] },
+        ],
+      },
+    ],
+  });
+});
+
+test("passes through an inline ADF node inside italic text", (t) => {
+  const date = { type: "date", attrs: { timestamp: "1777852800000" } };
+  const result = markdownToAdf(`*Returning <adf>${JSON.stringify(date)}</adf>*`);
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "Returning ", marks: [{ type: "em" }] },
+          date,
+        ],
+      },
+    ],
+  });
+});
+
+test("passes through multiple inline ADF nodes inside bold text", (t) => {
+  const mention1 = {
+    type: "mention",
+    attrs: { id: "id-1", text: "@Jamie", accessLevel: "APPLICATION" },
+  };
+  const date = { type: "date", attrs: { timestamp: "1777852800000" } };
+  const mention2 = {
+    type: "mention",
+    attrs: { id: "id-2", text: "@Phoenix", accessLevel: "APPLICATION" },
+  };
+  const result = markdownToAdf(
+    `**While <adf>${JSON.stringify(mention1)}</adf> is on leave (returning <adf>${JSON.stringify(date)}</adf>):** contact <adf>${JSON.stringify(mention2)}</adf>.`,
+  );
+  t.deepEqual(result, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "While ", marks: [{ type: "strong" }] },
+          mention1,
+          {
+            type: "text",
+            text: " is on leave (returning ",
+            marks: [{ type: "strong" }],
+          },
+          date,
+          { type: "text", text: "):", marks: [{ type: "strong" }] },
+          { type: "text", text: " contact " },
+          mention2,
+          { type: "text", text: "." },
+        ],
+      },
+    ],
+  });
+});
+
 // --- marked singleton isolation ---
 
 test("importing marklassian does not affect marked.parse() HTML output", (t) => {

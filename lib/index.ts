@@ -552,25 +552,58 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           ];
 
         case "em":
-          return (token.tokens ?? []).map((t) => ({
-            type: "text",
-            text: getSafeText(t),
-            marks: getMarks(t, { em: { type: "em" } }),
-          }));
+          return (token.tokens ?? []).flatMap((t) => {
+            if (t.type === "adf_inline") {
+              const node = parseAdfTag(
+                `<adf>${(t as AdfInlineToken).adfJson}</adf>`,
+              );
+              if (!node) return [];
+              return Array.isArray(node) ? node : [node];
+            }
+            return [
+              {
+                type: "text",
+                text: getSafeText(t),
+                marks: getMarks(t, { em: { type: "em" } }),
+              },
+            ];
+          });
 
         case "strong":
-          return (token.tokens ?? []).map((t) => ({
-            type: "text",
-            text: getSafeText(t),
-            marks: getMarks(t, { strong: { type: "strong" } }),
-          }));
+          return (token.tokens ?? []).flatMap((t) => {
+            if (t.type === "adf_inline") {
+              const node = parseAdfTag(
+                `<adf>${(t as AdfInlineToken).adfJson}</adf>`,
+              );
+              if (!node) return [];
+              return Array.isArray(node) ? node : [node];
+            }
+            return [
+              {
+                type: "text",
+                text: getSafeText(t),
+                marks: getMarks(t, { strong: { type: "strong" } }),
+              },
+            ];
+          });
 
         case "del":
-          return (token.tokens ?? []).map((t) => ({
-            type: "text",
-            text: getSafeText(t),
-            marks: getMarks(t, { strike: { type: "strike" } }),
-          }));
+          return (token.tokens ?? []).flatMap((t) => {
+            if (t.type === "adf_inline") {
+              const node = parseAdfTag(
+                `<adf>${(t as AdfInlineToken).adfJson}</adf>`,
+              );
+              if (!node) return [];
+              return Array.isArray(node) ? node : [node];
+            }
+            return [
+              {
+                type: "text",
+                text: getSafeText(t),
+                marks: getMarks(t, { strike: { type: "strike" } }),
+              },
+            ];
+          });
 
         case "link":
           return [
