@@ -306,7 +306,9 @@ test("passes through an inline ADF node inside bold text", (t) => {
 
 test("passes through an inline ADF node inside italic text", (t) => {
   const date = { type: "date", attrs: { timestamp: "1777852800000" } };
-  const result = markdownToAdf(`*Returning <adf>${JSON.stringify(date)}</adf>*`);
+  const result = markdownToAdf(
+    `*Returning <adf>${JSON.stringify(date)}</adf>*`,
+  );
   t.deepEqual(result, {
     version: 1,
     type: "doc",
