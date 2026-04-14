@@ -534,22 +534,40 @@ function getMarks(
 }
 
 /**
- * Resolves a single inline token to ADF node(s).
+ * Resolves a single inline token to ADF node(s), accumulating marks as it
+ * recurses into nested emphasis spans.
  *
  * - adf_inline tokens are parsed and emitted as their ADF node(s) directly,
  *   with no marks applied (ADF inline nodes such as mention and date are not
  *   text nodes and cannot carry marks).
+ * - em/strong/del tokens recurse into their children, merging the token's mark
+ *   into the inherited marks accumulator so all ancestors' marks are preserved.
  * - All other tokens are emitted as a single text node carrying the given marks.
  *
- * The marks parameter accepts an inherited marks array, keeping the interface
- * open for future recursive handling of nested emphasis.
+ * The marks parameter is only supplied during recursion; top-level callers omit it.
  */
-function resolveInlineToken(token: RelaxedToken, marks: AdfMark[]): AdfNode[] {
+function resolveInlineToken(
+  token: RelaxedToken,
+  marks: AdfMark[] = [],
+): AdfNode[] {
   if (token.type === "adf_inline") {
     const node = parseAdfTag(`<adf>${(token as AdfInlineToken).adfJson}</adf>`);
     if (!node) return [];
     return Array.isArray(node) ? node : [node];
   }
+
+  const markForType: Record<string, AdfMark> = {
+    em: { type: "em" },
+    strong: { type: "strong" },
+    del: { type: "strike" },
+  };
+
+  const ownMark = markForType[token.type];
+  if (ownMark && token.tokens?.length) {
+    const accumulated = [...marks, ownMark];
+    return token.tokens.flatMap((t) => resolveInlineToken(t, accumulated));
+  }
+
   return [{ type: "text", text: getSafeText(token), marks }];
 }
 
@@ -572,19 +590,13 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           ];
 
         case "em":
-          return (token.tokens ?? []).flatMap((t) =>
-            resolveInlineToken(t, getMarks(t, { em: { type: "em" } })),
-          );
+          return resolveInlineToken(token);
 
         case "strong":
-          return (token.tokens ?? []).flatMap((t) =>
-            resolveInlineToken(t, getMarks(t, { strong: { type: "strong" } })),
-          );
+          return resolveInlineToken(token);
 
         case "del":
-          return (token.tokens ?? []).flatMap((t) =>
-            resolveInlineToken(t, getMarks(t, { strike: { type: "strike" } })),
-          );
+          return resolveInlineToken(token);
 
         case "link":
           return [
@@ -616,7 +628,7 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           return [{ type: "hardBreak" }];
 
         case "adf_inline":
-          return resolveInlineToken(token, []);
+          return resolveInlineToken(token);
 
         default:
           return [];

@@ -167,3 +167,139 @@ console.log(\`Price: \${price}\`);
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, specialCharsAdf);
 });
+
+// --- nested emphasis ---
+
+test("bold text containing italic produces both marks on the inner text", (t) => {
+  t.deepEqual(markdownToAdf("**bold _and italic_ text**"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "bold ", marks: [{ type: "strong" }] },
+          {
+            type: "text",
+            text: "and italic",
+            marks: [{ type: "strong" }, { type: "em" }],
+          },
+          { type: "text", text: " text", marks: [{ type: "strong" }] },
+        ],
+      },
+    ],
+  });
+});
+
+test("italic text containing bold produces both marks on the inner text", (t) => {
+  t.deepEqual(markdownToAdf("_italic **and bold** text_"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "italic ", marks: [{ type: "em" }] },
+          {
+            type: "text",
+            text: "and bold",
+            marks: [{ type: "em" }, { type: "strong" }],
+          },
+          { type: "text", text: " text", marks: [{ type: "em" }] },
+        ],
+      },
+    ],
+  });
+});
+
+test("text wrapped in both bold and italic gets both marks", (t) => {
+  t.deepEqual(markdownToAdf("**_both_**"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "both",
+            marks: [{ type: "strong" }, { type: "em" }],
+          },
+        ],
+      },
+    ],
+  });
+});
+
+test("strikethrough text containing bold produces both marks on the inner text", (t) => {
+  t.deepEqual(markdownToAdf("~~strike **and bold**~~"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "strike ", marks: [{ type: "strike" }] },
+          {
+            type: "text",
+            text: "and bold",
+            marks: [{ type: "strike" }, { type: "strong" }],
+          },
+        ],
+      },
+    ],
+  });
+});
+
+// --- nested emphasis with inline ADF ---
+
+test("bold span containing both italic text and an inline ADF node", (t) => {
+  const mention = {
+    type: "mention",
+    attrs: { id: "abc-123", text: "@Alice", accessLevel: "APPLICATION" },
+  };
+  t.deepEqual(
+    markdownToAdf(
+      `**contact _Alice_ aka <adf>${JSON.stringify(mention)}</adf>**`,
+    ),
+    {
+      version: 1,
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "contact ", marks: [{ type: "strong" }] },
+            {
+              type: "text",
+              text: "Alice",
+              marks: [{ type: "strong" }, { type: "em" }],
+            },
+            { type: "text", text: " aka ", marks: [{ type: "strong" }] },
+            mention,
+          ],
+        },
+      ],
+    },
+  );
+});
+
+test("inline ADF node inside italic text that is itself inside bold text", (t) => {
+  const date = { type: "date", attrs: { timestamp: "1777852800000" } };
+  t.deepEqual(
+    markdownToAdf(`**returning _<adf>${JSON.stringify(date)}</adf>_**`),
+    {
+      version: 1,
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "returning ", marks: [{ type: "strong" }] },
+            date,
+          ],
+        },
+      ],
+    },
+  );
+});
