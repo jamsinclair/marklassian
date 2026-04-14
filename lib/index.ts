@@ -533,6 +533,26 @@ function getMarks(
   return resolvedMarks;
 }
 
+/**
+ * Resolves a single inline token to ADF node(s).
+ *
+ * - adf_inline tokens are parsed and emitted as their ADF node(s) directly,
+ *   with no marks applied (ADF inline nodes such as mention and date are not
+ *   text nodes and cannot carry marks).
+ * - All other tokens are emitted as a single text node carrying the given marks.
+ *
+ * The marks parameter accepts an inherited marks array, keeping the interface
+ * open for future recursive handling of nested emphasis.
+ */
+function resolveInlineToken(token: RelaxedToken, marks: AdfMark[]): AdfNode[] {
+  if (token.type === "adf_inline") {
+    const node = parseAdfTag(`<adf>${(token as AdfInlineToken).adfJson}</adf>`);
+    if (!node) return [];
+    return Array.isArray(node) ? node : [node];
+  }
+  return [{ type: "text", text: getSafeText(token), marks }];
+}
+
 function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
   if (!tokens) return [];
 
@@ -552,58 +572,19 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           ];
 
         case "em":
-          return (token.tokens ?? []).flatMap((t) => {
-            if (t.type === "adf_inline") {
-              const node = parseAdfTag(
-                `<adf>${(t as AdfInlineToken).adfJson}</adf>`,
-              );
-              if (!node) return [];
-              return Array.isArray(node) ? node : [node];
-            }
-            return [
-              {
-                type: "text",
-                text: getSafeText(t),
-                marks: getMarks(t, { em: { type: "em" } }),
-              },
-            ];
-          });
+          return (token.tokens ?? []).flatMap((t) =>
+            resolveInlineToken(t, getMarks(t, { em: { type: "em" } })),
+          );
 
         case "strong":
-          return (token.tokens ?? []).flatMap((t) => {
-            if (t.type === "adf_inline") {
-              const node = parseAdfTag(
-                `<adf>${(t as AdfInlineToken).adfJson}</adf>`,
-              );
-              if (!node) return [];
-              return Array.isArray(node) ? node : [node];
-            }
-            return [
-              {
-                type: "text",
-                text: getSafeText(t),
-                marks: getMarks(t, { strong: { type: "strong" } }),
-              },
-            ];
-          });
+          return (token.tokens ?? []).flatMap((t) =>
+            resolveInlineToken(t, getMarks(t, { strong: { type: "strong" } })),
+          );
 
         case "del":
-          return (token.tokens ?? []).flatMap((t) => {
-            if (t.type === "adf_inline") {
-              const node = parseAdfTag(
-                `<adf>${(t as AdfInlineToken).adfJson}</adf>`,
-              );
-              if (!node) return [];
-              return Array.isArray(node) ? node : [node];
-            }
-            return [
-              {
-                type: "text",
-                text: getSafeText(t),
-                marks: getMarks(t, { strike: { type: "strike" } }),
-              },
-            ];
-          });
+          return (token.tokens ?? []).flatMap((t) =>
+            resolveInlineToken(t, getMarks(t, { strike: { type: "strike" } })),
+          );
 
         case "link":
           return [
@@ -634,13 +615,8 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
         case "br":
           return [{ type: "hardBreak" }];
 
-        case "adf_inline": {
-          const node = parseAdfTag(
-            `<adf>${(token as AdfInlineToken).adfJson}</adf>`,
-          );
-          if (!node) return [];
-          return Array.isArray(node) ? node : [node];
-        }
+        case "adf_inline":
+          return resolveInlineToken(token, []);
 
         default:
           return [];
