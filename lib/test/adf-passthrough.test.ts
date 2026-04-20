@@ -415,6 +415,49 @@ test("inline ADF node inside italic text that is itself inside bold text", (t) =
   );
 });
 
+// --- block vs inline distinction ---
+
+test("block <adf> tag produces a top-level doc child; bare inline <adf> tag gets a paragraph parent from marked", (t) => {
+  // Block form: <adf> on its own line(s) with surrounding blank lines.
+  // The node is emitted directly as a child of the document root.
+  const blockResult = markdownToAdf('<adf>\n{"type":"rule"}\n</adf>');
+  t.deepEqual(blockResult, {
+    version: 1,
+    type: "doc",
+    content: [{ type: "rule" }],
+  });
+
+  // Inline form: <adf> alone on a line, no heading markers or other block syntax.
+  // marked treats bare inline content as a paragraph, so the node ends up inside one.
+  // The paragraph wrapper comes from marked's parsing context, not from the <adf> handler itself.
+  const inlineResult = markdownToAdf('<adf>{"type":"rule"}</adf>');
+  t.deepEqual(inlineResult, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [{ type: "rule" }],
+      },
+    ],
+  });
+
+  // To confirm: inside a heading, marked provides a heading context instead,
+  // so the ADF node sits directly inside the heading with no paragraph wrapper.
+  const headingResult = markdownToAdf('# Title <adf>{"type":"rule"}</adf>');
+  t.deepEqual(headingResult, {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "heading",
+        attrs: { level: 1 },
+        content: [{ type: "text", text: "Title " }, { type: "rule" }],
+      },
+    ],
+  });
+});
+
 // --- marked singleton isolation ---
 
 test("importing marklassian does not affect marked.parse() HTML output", (t) => {
