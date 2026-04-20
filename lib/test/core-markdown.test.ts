@@ -167,3 +167,86 @@ console.log(\`Price: \${price}\`);
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, specialCharsAdf);
 });
+
+// --- nested emphasis ---
+
+test("bold text containing italic produces both marks on the inner text", (t) => {
+  t.deepEqual(markdownToAdf("**bold _and italic_ text**"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "bold ", marks: [{ type: "strong" }] },
+          {
+            type: "text",
+            text: "and italic",
+            marks: [{ type: "strong" }, { type: "em" }],
+          },
+          { type: "text", text: " text", marks: [{ type: "strong" }] },
+        ],
+      },
+    ],
+  });
+});
+
+test("italic text containing bold produces both marks on the inner text", (t) => {
+  t.deepEqual(markdownToAdf("_italic **and bold** text_"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "italic ", marks: [{ type: "em" }] },
+          {
+            type: "text",
+            text: "and bold",
+            marks: [{ type: "em" }, { type: "strong" }],
+          },
+          { type: "text", text: " text", marks: [{ type: "em" }] },
+        ],
+      },
+    ],
+  });
+});
+
+test("text wrapped in both bold and italic gets both marks", (t) => {
+  t.deepEqual(markdownToAdf("**_both_**"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: "both",
+            marks: [{ type: "strong" }, { type: "em" }],
+          },
+        ],
+      },
+    ],
+  });
+});
+
+test("strikethrough text containing bold produces both marks on the inner text", (t) => {
+  t.deepEqual(markdownToAdf("~~strike **and bold**~~"), {
+    version: 1,
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          { type: "text", text: "strike ", marks: [{ type: "strike" }] },
+          {
+            type: "text",
+            text: "and bold",
+            marks: [{ type: "strike" }, { type: "strong" }],
+          },
+        ],
+      },
+    ],
+  });
+});

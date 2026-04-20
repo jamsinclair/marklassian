@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { Marked } from "marked";
 import type { Token, Tokens } from "marked";
 
 type AdfNode = {
@@ -25,6 +25,53 @@ type RelaxedToken = Token & {
   task?: boolean;
   checked?: boolean;
 };
+
+type AdfInlineToken = {
+  type: "adf_inline";
+  raw: string;
+  adfJson: string;
+};
+
+/**
+ * A local Marked instance with the adf_inline extension registered. Using a
+ * local instance (rather than calling `marked.use()` on the global singleton)
+ * ensures that importing marklassian does not affect any other use of marked
+ * in the consumer's application.
+ *
+ * The extension intercepts <adf>…</adf> tags appearing within inline content
+ * (paragraphs, table cells, headings, etc.) and produces a single `adf_inline`
+ * token carrying the raw JSON string. Without this extension, marked's inline
+ * lexer splits the tag into four separate tokens (html, text, html, text),
+ * making it impossible to parse.
+ */
+const marked = new Marked({
+  extensions: [
+    {
+      name: "adf_inline",
+      level: "inline" as const,
+      start(src: string) {
+        // Use a case-insensitive search to match the tokenizer regex (/i),
+        // so <ADF> tags are treated consistently by both functions.
+        return src.search(/<adf>/i);
+      },
+      tokenizer(src: string): AdfInlineToken | undefined {
+        const match = src.match(/^<adf>([\s\S]*?)<\/adf>/i);
+        if (match) {
+          return {
+            type: "adf_inline",
+            raw: match[0],
+            adfJson: match[1]!.trim(),
+          };
+        }
+      },
+      // renderer is required by the marked extension interface but is not
+      // relevant here — marklassian never renders to HTML.
+      renderer() {
+        return "";
+      },
+    },
+  ],
+});
 
 /**
  * Generates a local ID for ADF elements.
@@ -486,6 +533,44 @@ function getMarks(
   return resolvedMarks;
 }
 
+/**
+ * Resolves a single inline token to ADF node(s), accumulating marks as it
+ * recurses into nested emphasis spans.
+ *
+ * - adf_inline tokens are parsed and emitted as their ADF node(s) directly,
+ *   with no marks applied (ADF inline nodes such as mention and date are not
+ *   text nodes and cannot carry marks).
+ * - em/strong/del tokens recurse into their children, merging the token's mark
+ *   into the inherited marks accumulator so all ancestors' marks are preserved.
+ * - All other tokens are emitted as a single text node carrying the given marks.
+ *
+ * The marks parameter is only supplied during recursion; top-level callers omit it.
+ */
+function resolveInlineToken(
+  token: RelaxedToken,
+  marks: AdfMark[] = [],
+): AdfNode[] {
+  if (token.type === "adf_inline") {
+    const node = parseAdfTag(`<adf>${(token as AdfInlineToken).adfJson}</adf>`);
+    if (!node) return [];
+    return Array.isArray(node) ? node : [node];
+  }
+
+  const markForType: Record<string, AdfMark> = {
+    em: { type: "em" },
+    strong: { type: "strong" },
+    del: { type: "strike" },
+  };
+
+  const ownMark = markForType[token.type];
+  if (ownMark && token.tokens?.length) {
+    const accumulated = [...marks, ownMark];
+    return token.tokens.flatMap((t) => resolveInlineToken(t, accumulated));
+  }
+
+  return [{ type: "text", text: getSafeText(token), marks }];
+}
+
 function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
   if (!tokens) return [];
 
@@ -505,25 +590,13 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           ];
 
         case "em":
-          return (token.tokens ?? []).map((t) => ({
-            type: "text",
-            text: getSafeText(t),
-            marks: getMarks(t, { em: { type: "em" } }),
-          }));
+          return resolveInlineToken(token);
 
         case "strong":
-          return (token.tokens ?? []).map((t) => ({
-            type: "text",
-            text: getSafeText(t),
-            marks: getMarks(t, { strong: { type: "strong" } }),
-          }));
+          return resolveInlineToken(token);
 
         case "del":
-          return (token.tokens ?? []).map((t) => ({
-            type: "text",
-            text: getSafeText(t),
-            marks: getMarks(t, { strike: { type: "strike" } }),
-          }));
+          return resolveInlineToken(token);
 
         case "link":
           return [
@@ -553,6 +626,9 @@ function inlineToAdf(tokens?: RelaxedToken[]): AdfNode[] {
 
         case "br":
           return [{ type: "hardBreak" }];
+
+        case "adf_inline":
+          return resolveInlineToken(token);
 
         default:
           return [];
