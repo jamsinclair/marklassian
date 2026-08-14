@@ -102,6 +102,26 @@ Thisstringoftexthasa**strong**wordcontained.`;
   t.deepEqual(adf, textEdgeCases);
 });
 
+test(`Preserves soft line breaks before inline formatting`, (t) => {
+  const adf = markdownToAdf(
+    "**Type:** chore\n**Estimated scope:** S (1-2 files)",
+  );
+
+  t.deepEqual(adf.content[0], {
+    type: "paragraph",
+    content: [
+      { type: "text", text: "Type:", marks: [{ type: "strong" }] },
+      { type: "text", text: " chore " },
+      {
+        type: "text",
+        text: "Estimated scope:",
+        marks: [{ type: "strong" }],
+      },
+      { type: "text", text: " S (1-2 files)" },
+    ],
+  });
+});
+
 test(`Can convert tables correctly`, async (t) => {
   const markdown = `| **First Header** | Second Header |
 | ------------- | ------------- |
