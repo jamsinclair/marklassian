@@ -31,38 +31,38 @@
             {
               "type": "text",
               "text": "Incomplete task"
-            },
+            }
+          ]
+        },
+        {
+          "type": "taskList",
+          "attrs": {
+            "localId": "test-task-list-id-1"
+          },
+          "content": [
             {
-              "type": "taskList",
+              "type": "taskItem",
               "attrs": {
-                "localId": "test-task-list-id-1"
+                "localId": "test-task-item-id-3",
+                "state": "DONE"
               },
               "content": [
                 {
-                  "type": "taskItem",
-                  "attrs": {
-                    "localId": "test-task-item-id-3",
-                    "state": "DONE"
-                  },
-                  "content": [
-                    {
-                      "type": "text",
-                      "text": "Nested completed"
-                    }
-                  ]
-                },
+                  "type": "text",
+                  "text": "Nested completed"
+                }
+              ]
+            },
+            {
+              "type": "taskItem",
+              "attrs": {
+                "localId": "test-task-item-id-4",
+                "state": "TODO"
+              },
+              "content": [
                 {
-                  "type": "taskItem",
-                  "attrs": {
-                    "localId": "test-task-item-id-4",
-                    "state": "TODO"
-                  },
-                  "content": [
-                    {
-                      "type": "text",
-                      "text": "Nested incomplete"
-                    }
-                  ]
+                  "type": "text",
+                  "text": "Nested incomplete"
                 }
               ]
             }

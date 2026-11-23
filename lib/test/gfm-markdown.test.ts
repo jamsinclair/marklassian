@@ -114,3 +114,77 @@ test(`Handles mixed regular and task list items correctly`, async (t) => {
     t.is(item.type, "listItem");
   });
 });
+
+test(`Places regular sub-lists of task items after the task list`, async (t) => {
+  const markdown = `- [ ] Task
+  - Sub item
+- [x] Next task`;
+
+  const adf = await markdownToAdf(markdown);
+  const normalizedAdf = normalizeAdfForTesting(adf);
+
+  t.deepEqual(normalizedAdf.content, [
+    {
+      type: "taskList",
+      attrs: { localId: "test-task-list-id" },
+      content: [
+        {
+          type: "taskItem",
+          attrs: { localId: "test-task-item-id-1", state: "TODO" },
+          content: [{ type: "text", text: "Task" }],
+        },
+      ],
+    },
+    {
+      type: "bulletList",
+      content: [
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Sub item" }],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "taskList",
+      attrs: { localId: "test-task-list-id-1" },
+      content: [
+        {
+          type: "taskItem",
+          attrs: { localId: "test-task-item-id-2", state: "DONE" },
+          content: [{ type: "text", text: "Next task" }],
+        },
+      ],
+    },
+  ]);
+});
+
+test(`Task items only contain inline content`, async (t) => {
+  const markdown = `- [ ] Task
+  - [ ] Nested task
+    - Sub item
+  \`\`\`
+  code
+  \`\`\``;
+
+  const adf = await markdownToAdf(markdown);
+
+  function assertInline(node: any) {
+    if (node.type === "taskItem") {
+      for (const child of node.content) {
+        t.true(["text", "hardBreak"].includes(child.type));
+      }
+    }
+    node.content?.forEach(assertInline);
+  }
+
+  adf.content.forEach(assertInline);
+  t.deepEqual(
+    adf.content.map((node) => node.type),
+    ["taskList", "bulletList", "codeBlock"],
+  );
+});
