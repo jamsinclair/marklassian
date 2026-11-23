@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import { IntlProvider } from "react-intl-next";
+import { IntlProvider } from "react-intl";
 import { BrowserRouter } from "react-router";
 import "./index.css";
 
