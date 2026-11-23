@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.2
+
+### Bug Fixes
+
+- Preserve soft line breaks before inline formatting ([#13](https://github.com/jamsinclair/marklassian/pull/13))
+- Fixes invalid ADF being generated for empty or nested blockquotes, and headings or blockquotes inside list items ([#14](https://github.com/jamsinclair/marklassian/issues/14))
+- Fixes invalid ADF being generated for sub items nested under task list items ([#14](https://github.com/jamsinclair/marklassian/issues/14))
+- Include sources in source maps for better typings ([#15](https://github.com/jamsinclair/marklassian/issues/15))
+
 ## 1.2.1
 
 ### Bug Fixes
