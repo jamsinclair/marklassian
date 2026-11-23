@@ -68,8 +68,17 @@ This matches the structure of a node in an ADF document's `content` array. All `
 If the tag content is not valid JSON, or any parsed value is not an object with a `"type"` string, `markdownToAdf` will throw an error.
 
 ⚠️ Please note
-- `<adf>` must appear as a block-level element — surrounded by blank lines. Inline placement (e.g. inside a sentence) will result in the tag being treated as inline HTML and the content will not be parsed as ADF.
+- `<adf>` can appear either as a block-level element (surrounded by blank lines) or inline within a paragraph, list item, table cell, etc. Inline placement embeds the ADF node(s) into the surrounding paragraph content:
+
+  ```markdown
+  See the <adf>{"type":"inlineCard","attrs":{"url":"https://example.com"}}</adf> card above.
+
+  | Status | Notes |
+  | --- | --- |
+  | <adf>{"type":"emoji","attrs":{"shortName":":white_check_mark:","text":"✅"}}</adf> Done | All good |
+  ```
 - The embedded ADF nodes are not processed or validated by this library. They are passed through verbatim into the output document. This means that you are responsible for ensuring that the embedded ADF is valid and correctly structured for your use case.
+- Placing an `<adf>` tag inside a Markdown link (e.g. `[text <adf>...</adf>](https://example.com)`) is not supported and the behaviour is undefined. ADF does not allow non-text inline nodes (such as `mention` or `date`) to carry a `link` mark, so there is no valid ADF representation for this construct.
 
 ## API Reference
 
