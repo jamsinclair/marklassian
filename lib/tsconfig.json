@@ -16,6 +16,7 @@
     "module": "NodeNext",
     "outDir": "dist",
     "sourceMap": true,
+    "inlineSources": true,
 
     "declaration": true,
 
