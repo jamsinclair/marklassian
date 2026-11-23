@@ -187,3 +187,51 @@ console.log(\`Price: \${price}\`);
   const adf = await markdownToAdf(markdown);
   t.deepEqual(adf, specialCharsAdf);
 });
+
+test(`Omits empty blockquotes`, (t) => {
+  const adf = markdownToAdf(">");
+  t.deepEqual(adf.content, []);
+});
+
+test(`Converts headings and nested blockquotes inside blockquotes`, (t) => {
+  const adf = markdownToAdf("> # Title\n>\n> > Nested quote");
+  t.deepEqual(adf.content, [
+    {
+      type: "blockquote",
+      content: [
+        { type: "paragraph", content: [{ type: "text", text: "Title" }] },
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Nested quote" }],
+        },
+      ],
+    },
+  ]);
+});
+
+test(`Converts headings and blockquotes inside list items`, (t) => {
+  const adf = markdownToAdf("- # Title\n- > quote\n-");
+  t.deepEqual(adf.content, [
+    {
+      type: "bulletList",
+      content: [
+        {
+          type: "listItem",
+          content: [
+            { type: "paragraph", content: [{ type: "text", text: "Title" }] },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            { type: "paragraph", content: [{ type: "text", text: "quote" }] },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [{ type: "paragraph", content: [] }],
+        },
+      ],
+    },
+  ]);
+});
