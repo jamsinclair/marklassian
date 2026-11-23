@@ -255,9 +255,15 @@ function processParagraph(tokens?: RelaxedToken[]): AdfNode[] {
 
     if (token?.type === "image") {
       if (currentParagraphTokens.length) {
+        const content = inlineToAdf(currentParagraphTokens);
+        const lastNode = content.at(-1);
+        if (lastNode?.type === "text" && lastNode.text?.endsWith(" ")) {
+          lastNode.text = lastNode.text.slice(0, -1);
+        }
+
         outputNodes.push({
           type: "paragraph",
-          content: inlineToAdf(currentParagraphTokens),
+          content,
         });
         currentParagraphTokens = [];
       }
@@ -430,10 +436,7 @@ function getSafeText(token: RelaxedToken): string {
   }
 
   if ("text" in token) {
-    return token.text
-      .replace(/\n$/, "")
-      .replace(/\n/g, " ")
-      .replace(/\s+/g, " ");
+    return token.text.replace(/\n/g, " ").replace(/\s+/g, " ");
   }
 
   return "";
