@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.3.0
 
 ### New Features
 
-- Added `generateLocalId` option to `markdownToAdf` for custom (e.g. deterministic) `localId` generation
+- Added `generateLocalId` option to `markdownToAdf` for custom (e.g. deterministic) `localId` generation ([#18](https://github.com/jamsinclair/marklassian/pull/18))
 
 ## 1.2.2
 
