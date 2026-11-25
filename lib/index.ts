@@ -149,11 +149,15 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
             ],
           };
 
-        case "blockquote":
+        case "blockquote": {
+          const content = flattenNestedBlocks(tokensToAdf(token.tokens));
+          // ADF requires at least one item in the content
+          if (!content.length) return null;
           return {
             type: "blockquote",
-            content: tokensToAdf(token.tokens),
+            content,
           };
+        }
 
         case "hr":
           return { type: "rule" };
@@ -173,6 +177,22 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
     })
     .filter(Boolean)
     .flat() as AdfNode[];
+}
+
+/**
+ * ADF blockquotes and list items cannot contain headings or blockquotes.
+ * Headings are converted to paragraphs and nested blockquotes are unwrapped.
+ */
+function flattenNestedBlocks(nodes: AdfNode[]): AdfNode[] {
+  return nodes.flatMap((node) => {
+    if (node.type === "heading") {
+      return [{ type: "paragraph", content: node.content ?? [] }];
+    }
+    if (node.type === "blockquote") {
+      return flattenNestedBlocks(node.content ?? []);
+    }
+    return [node];
+  });
 }
 
 function createMediaNode(token: Tokens.Image): AdfNode {
@@ -334,7 +354,7 @@ function processListItem(item: RelaxedToken): AdfNode {
           });
         }
       } else {
-        const processed = tokensToAdf([token]);
+        const processed = flattenNestedBlocks(tokensToAdf([token]));
         if (processed.length) {
           itemContent.push(...processed);
         }
@@ -347,6 +367,11 @@ function processListItem(item: RelaxedToken): AdfNode {
       type: "paragraph",
       content: inlineToAdf(currentParagraphTokens),
     });
+  }
+
+  // ADF requires at least one item in the content
+  if (!itemContent.length) {
+    itemContent.push({ type: "paragraph", content: [] });
   }
 
   return {
