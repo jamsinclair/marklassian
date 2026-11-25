@@ -36,10 +36,10 @@ export type MarkdownToAdfOptions = {
   generateLocalId?: (nodeType: LocalIdNodeType) => string;
 };
 
-const defaultGenerateLocalId = (): string => globalThis.crypto.randomUUID();
+type GenerateLocalId = (nodeType: LocalIdNodeType) => string;
 
-let generateLocalId: (nodeType: LocalIdNodeType) => string =
-  defaultGenerateLocalId;
+const defaultGenerateLocalId: GenerateLocalId = () =>
+  globalThis.crypto.randomUUID();
 
 /**
  * Parses an <adf>...</adf> HTML token value and returns the embedded ADF node(s).
@@ -98,20 +98,19 @@ export function markdownToAdf(
   markdown: string,
   options: MarkdownToAdfOptions = {},
 ): AdfDocument {
-  generateLocalId = options.generateLocalId ?? defaultGenerateLocalId;
-  try {
-    const tokens = marked.lexer(markdown);
-    return {
-      version: 1,
-      type: "doc",
-      content: tokensToAdf(tokens),
-    };
-  } finally {
-    generateLocalId = defaultGenerateLocalId;
-  }
+  const generateLocalId = options.generateLocalId ?? defaultGenerateLocalId;
+  const tokens = marked.lexer(markdown);
+  return {
+    version: 1,
+    type: "doc",
+    content: tokensToAdf(tokens, generateLocalId),
+  };
 }
 
-function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
+function tokensToAdf(
+  tokens: RelaxedToken[] | undefined,
+  generateLocalId: GenerateLocalId,
+): AdfNode[] {
   if (!tokens) return [];
 
   return tokens
@@ -128,7 +127,7 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           };
 
         case "list":
-          return processList(token as Tokens.List);
+          return processList(token as Tokens.List, generateLocalId);
 
         case "code":
           return {
@@ -143,7 +142,9 @@ function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
           };
 
         case "blockquote": {
-          const content = flattenNestedBlocks(tokensToAdf(token.tokens));
+          const content = flattenNestedBlocks(
+            tokensToAdf(token.tokens, generateLocalId),
+          );
           // ADF requires at least one item in the content
           if (!content.length) return null;
           return {
@@ -317,21 +318,29 @@ function isTaskList(token: Tokens.List): boolean {
   );
 }
 
-function processList(token: Tokens.List): AdfNode[] {
+function processList(
+  token: Tokens.List,
+  generateLocalId: GenerateLocalId,
+): AdfNode[] {
   if (isTaskList(token)) {
-    return processTaskList(token);
+    return processTaskList(token, generateLocalId);
   }
 
   return [
     {
       type: token.ordered ? "orderedList" : "bulletList",
       ...(token.ordered ? { attrs: { order: token.start || 1 } } : {}),
-      content: token.items.map((item: RelaxedToken) => processListItem(item)),
+      content: token.items.map((item: RelaxedToken) =>
+        processListItem(item, generateLocalId),
+      ),
     },
   ];
 }
 
-function processListItem(item: RelaxedToken): AdfNode {
+function processListItem(
+  item: RelaxedToken,
+  generateLocalId: GenerateLocalId,
+): AdfNode {
   const itemContent: AdfNode[] = [];
   let currentParagraphTokens: RelaxedToken[] = [];
 
@@ -348,9 +357,11 @@ function processListItem(item: RelaxedToken): AdfNode {
       }
 
       if (token.type === "list") {
-        itemContent.push(...processList(token as Tokens.List));
+        itemContent.push(...processList(token as Tokens.List, generateLocalId));
       } else {
-        const processed = flattenNestedBlocks(tokensToAdf([token]));
+        const processed = flattenNestedBlocks(
+          tokensToAdf([token], generateLocalId),
+        );
         if (processed.length) {
           itemContent.push(...processed);
         }
@@ -385,9 +396,12 @@ type TaskListEntry =
  * placed as siblings within the parent taskList, while any other nested
  * blocks (e.g. regular sub-lists) are placed after the task list.
  */
-function processTaskList(token: Tokens.List): AdfNode[] {
+function processTaskList(
+  token: Tokens.List,
+  generateLocalId: GenerateLocalId,
+): AdfNode[] {
   const entries: TaskListEntry[] = [];
-  collectTaskListEntries(token, 0, entries);
+  collectTaskListEntries(token, 0, entries, generateLocalId);
 
   const output: AdfNode[] = [];
   let stack: { depth: number; list: AdfNode }[] = [];
@@ -400,7 +414,7 @@ function processTaskList(token: Tokens.List): AdfNode[] {
     }
 
     if (!stack.length) {
-      const list = createTaskListNode();
+      const list = createTaskListNode(generateLocalId);
       output.push(list);
       stack.push({ depth: entry.depth, list });
     }
@@ -411,7 +425,7 @@ function processTaskList(token: Tokens.List): AdfNode[] {
 
     const current = stack.at(-1)!;
     if (entry.depth > current.depth && current.list.content!.length) {
-      const nested = createTaskListNode();
+      const nested = createTaskListNode(generateLocalId);
       current.list.content!.push(nested);
       stack.push({ depth: entry.depth, list: nested });
     }
@@ -422,7 +436,7 @@ function processTaskList(token: Tokens.List): AdfNode[] {
   return output;
 }
 
-function createTaskListNode(): AdfNode {
+function createTaskListNode(generateLocalId: GenerateLocalId): AdfNode {
   return {
     type: "taskList",
     attrs: { localId: generateLocalId("taskList") },
@@ -434,6 +448,7 @@ function collectTaskListEntries(
   token: Tokens.List,
   depth: number,
   entries: TaskListEntry[],
+  generateLocalId: GenerateLocalId,
 ): void {
   for (const item of token.items as RelaxedToken[]) {
     const inlineContent: AdfNode[] = [];
@@ -467,9 +482,14 @@ function collectTaskListEntries(
 
     for (const child of blockTokens) {
       if (child.type === "list" && isTaskList(child as Tokens.List)) {
-        collectTaskListEntries(child as Tokens.List, depth + 1, entries);
+        collectTaskListEntries(
+          child as Tokens.List,
+          depth + 1,
+          entries,
+          generateLocalId,
+        );
       } else {
-        for (const node of tokensToAdf([child])) {
+        for (const node of tokensToAdf([child], generateLocalId)) {
           entries.push({ kind: "block", node });
         }
       }

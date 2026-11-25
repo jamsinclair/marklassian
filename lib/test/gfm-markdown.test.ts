@@ -213,3 +213,19 @@ test(`Custom generateLocalId does not leak into later calls`, (t) => {
 
   t.not(adf.content[0]!.attrs?.localId, "fixed");
 });
+
+test(`Nested markdownToAdf calls keep their own generateLocalId`, (t) => {
+  const adf = markdownToAdf(`- [ ] Foo\n- [ ] Bar`, {
+    generateLocalId: (nodeType) => {
+      markdownToAdf(`- [ ] Inner`, { generateLocalId: () => "inner" });
+      return `outer-${nodeType}`;
+    },
+  });
+  const list = adf.content[0]!;
+
+  t.is(list.attrs?.localId, "outer-taskList");
+  t.deepEqual(
+    list.content!.map((item) => item.attrs?.localId),
+    ["outer-taskItem", "outer-taskItem"],
+  );
+});
