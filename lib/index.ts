@@ -26,11 +26,20 @@ type RelaxedToken = Token & {
   checked?: boolean;
 };
 
-/**
- * Generates a local ID for ADF elements.
- * @returns a random UUID v4 string
- */
-const generateLocalId = (): string => globalThis.crypto.randomUUID();
+export type LocalIdNodeType = "taskList" | "taskItem";
+
+export type MarkdownToAdfOptions = {
+  /**
+   * Generates the `localId` attribute for ADF nodes that require one.
+   * Returned IDs must be unique within the document. Defaults to a random UUID v4.
+   */
+  generateLocalId?: (nodeType: LocalIdNodeType) => string;
+};
+
+const defaultGenerateLocalId = (): string => globalThis.crypto.randomUUID();
+
+let generateLocalId: (nodeType: LocalIdNodeType) => string =
+  defaultGenerateLocalId;
 
 /**
  * Parses an <adf>...</adf> HTML token value and returns the embedded ADF node(s).
@@ -85,13 +94,21 @@ function parseAdfTag(raw: string): AdfNode | AdfNode[] | null {
   return node as AdfNode;
 }
 
-export function markdownToAdf(markdown: string): AdfDocument {
-  const tokens = marked.lexer(markdown);
-  return {
-    version: 1,
-    type: "doc",
-    content: tokensToAdf(tokens),
-  };
+export function markdownToAdf(
+  markdown: string,
+  options: MarkdownToAdfOptions = {},
+): AdfDocument {
+  generateLocalId = options.generateLocalId ?? defaultGenerateLocalId;
+  try {
+    const tokens = marked.lexer(markdown);
+    return {
+      version: 1,
+      type: "doc",
+      content: tokensToAdf(tokens),
+    };
+  } finally {
+    generateLocalId = defaultGenerateLocalId;
+  }
 }
 
 function tokensToAdf(tokens?: RelaxedToken[]): AdfNode[] {
@@ -408,7 +425,7 @@ function processTaskList(token: Tokens.List): AdfNode[] {
 function createTaskListNode(): AdfNode {
   return {
     type: "taskList",
-    attrs: { localId: generateLocalId() },
+    attrs: { localId: generateLocalId("taskList") },
     content: [],
   };
 }
@@ -441,7 +458,7 @@ function collectTaskListEntries(
       node: {
         type: "taskItem",
         attrs: {
-          localId: generateLocalId(),
+          localId: generateLocalId("taskItem"),
           state: item.checked ? "DONE" : "TODO",
         },
         content: inlineContent,

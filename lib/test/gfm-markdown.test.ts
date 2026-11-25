@@ -188,3 +188,28 @@ test(`Task items only contain inline content`, async (t) => {
     ["taskList", "bulletList", "codeBlock"],
   );
 });
+
+test(`Uses custom generateLocalId for task lists and items`, (t) => {
+  const counts: Record<string, number> = {};
+  const generateLocalId = (nodeType: string) => {
+    counts[nodeType] = (counts[nodeType] ?? 0) + 1;
+    return `${nodeType}-${counts[nodeType]}`;
+  };
+  const markdown = `- [ ] Foo\n- [x] Bar`;
+
+  const adf = markdownToAdf(markdown, { generateLocalId });
+  const list = adf.content[0]!;
+
+  t.is(list.attrs?.localId, "taskList-1");
+  t.deepEqual(
+    list.content!.map((item) => item.attrs?.localId),
+    ["taskItem-1", "taskItem-2"],
+  );
+});
+
+test(`Custom generateLocalId does not leak into later calls`, (t) => {
+  markdownToAdf(`- [ ] Foo`, { generateLocalId: () => "fixed" });
+  const adf = markdownToAdf(`- [ ] Foo`);
+
+  t.not(adf.content[0]!.attrs?.localId, "fixed");
+});

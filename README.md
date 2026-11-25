@@ -73,9 +73,20 @@ If the tag content is not valid JSON, or any parsed value is not an object with 
 
 ## API Reference
 
-### `markdownToAdf(markdown: string): AdfDocument`
+### `markdownToAdf(markdown: string, options?: MarkdownToAdfOptions): AdfDocument`
 
 Converts a Markdown string to an ADF document object (JSON serialisable).
+
+#### Options
+
+- `generateLocalId?: (nodeType: 'taskList' | 'taskItem') => string`: generates the `localId` attribute for nodes that require one. Defaults to a random UUID v4. Provide your own for reproducible output (e.g. snapshot tests or change detection). IDs must be unique within the document, or Confluence/Jira may toggle or track the wrong task.
+
+```javascript
+let id = 0;
+const adf = markdownToAdf(markdown, {
+    generateLocalId: (nodeType) => `${nodeType}-${++id}`,
+});
+```
 
 ### Types
 
